@@ -34,6 +34,19 @@ define function objc/class-name (objc-class :: <objc/class>)
        end)
 end;
 
+define function objc/class-responds-to-selector
+    (objc-class :: <objc/class>, selector :: <objc/selector>)
+ => (well? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("class_respondsToSelector")
+        (objc-class :: <raw-machine-word>,
+         selector :: <raw-machine-word>)
+     => (well? :: <raw-boolean>)
+      (primitive-unwrap-machine-word(objc-class.raw-class),
+       primitive-unwrap-machine-word(selector.raw-selector))
+    end);
+end;
+
 define function objc/register-selector (name :: <string>)
  => (objc-selector :: <objc/selector>)
   let raw-objc-selector
