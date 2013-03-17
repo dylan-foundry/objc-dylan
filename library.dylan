@@ -17,9 +17,14 @@ define module objc
          objc/get-class,
          objc/instance-size,
          objc/class-name,
-         objc/class-responds-to-selector;
+         objc/class-responds-to-selector,
+         objc/get-class-method,
+         objc/get-instance-method;
 
   export <objc/selector>,
          objc/register-selector,
          objc/selector-name;
+
+  export <objc/method>,
+         objc/method-name;
 end module;

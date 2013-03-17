@@ -7,6 +7,8 @@ define suite objc-test-suite ()
   test objc-selector-test;
   test objc-selector-equal-test;
   test objc-responds-to-test;
+  test objc-get-class-method-test;
+  test objc-get-instance-method-test;
 end suite;
 
 define test objc-class-test ()
@@ -42,6 +44,28 @@ define test objc-responds-to-test ()
   check-false("NSObject doesn't responds to allocFoobar",
               objc/class-responds-to-selector(ns-object, objc/register-selector("allocFoobar")));
 end test objc-responds-to-test;
+
+define test objc-get-class-method-test ()
+  let ns-object = objc/get-class("NSObject");
+  let description-SEL = objc/register-selector("description");
+  let description-method = objc/get-class-method(ns-object, description-SEL);
+  check-equal("NSObject has a class method 'description'",
+              objc/method-name(description-method), description-SEL);
+  let bad-method-SEL = objc/register-selector("allocFoobar");
+  check-false("NSObject doesn't have a class method 'allocFoobar'",
+              objc/get-class-method(ns-object, bad-method-SEL));
+end test objc-get-class-method-test;
+
+define test objc-get-instance-method-test ()
+  let ns-object = objc/get-class("NSObject");
+  let description-SEL = objc/register-selector("description");
+  let description-method = objc/get-instance-method(ns-object, description-SEL);
+  check-equal("NSObject has an instance method 'description'",
+              objc/method-name(description-method), description-SEL);
+  let bad-method-SEL = objc/register-selector("allocFoobar");
+  check-false("NSObject doesn't have an instance method 'allocFoobar'",
+              objc/get-instance-method(ns-object, bad-method-SEL));
+end test objc-get-instance-method-test;
 
 /*
 Do something with this soon ...

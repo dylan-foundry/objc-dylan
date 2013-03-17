@@ -50,3 +50,41 @@ define function objc/instance-size (objc-class :: <objc/class>)
           (primitive-unwrap-machine-word(objc-class.raw-class))
        end)
 end;
+
+define function objc/get-class-method
+    (objc-class :: <objc/class>, selector :: <objc/selector>)
+ => (method? :: false-or(<objc/method>))
+  let raw-method
+    = primitive-wrap-machine-word
+        (%call-c-function ("class_getClassMethod")
+             (objc-class :: <raw-machine-word>,
+              selector :: <raw-machine-word>)
+          => (method? :: <raw-machine-word>)
+           (primitive-unwrap-machine-word(objc-class.raw-class),
+            primitive-unwrap-machine-word(selector.raw-selector))
+         end);
+  if (raw-method ~= 0)
+    make(<objc/method>, method: raw-method)
+  else
+    #f
+  end if
+end;
+
+define function objc/get-instance-method
+    (objc-class :: <objc/class>, selector :: <objc/selector>)
+ => (method? :: false-or(<objc/method>))
+  let raw-method
+    = primitive-wrap-machine-word
+        (%call-c-function ("class_getInstanceMethod")
+             (objc-class :: <raw-machine-word>,
+              selector :: <raw-machine-word>)
+          => (method? :: <raw-machine-word>)
+           (primitive-unwrap-machine-word(objc-class.raw-class),
+            primitive-unwrap-machine-word(selector.raw-selector))
+         end);
+  if (raw-method ~= 0)
+    make(<objc/method>, method: raw-method)
+  else
+    #f
+  end if
+end;
