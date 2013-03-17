@@ -3,6 +3,7 @@ synopsis: Test suite for the objc library.
 
 define suite objc-test-suite ()
   test objc-class-test;
+  test objc-class-instance-size-test;
   test objc-selector-test;
   test objc-selector-equal-test;
   test objc-responds-to-test;
@@ -13,6 +14,11 @@ define test objc-class-test ()
               objc/class-name(objc/get-class("NSObject")),
               "NSObject");
 end test objc-class-test;
+
+define test objc-class-instance-size-test ()
+  check-true("Can get NSObject class instance size",
+              objc/instance-size(objc/get-class("NSObject")) > 0);
+end test objc-class-instance-size-test;
 
 define test objc-selector-test ()
   check-equal("Can register selector",

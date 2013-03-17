@@ -41,3 +41,12 @@ define function objc/class-responds-to-selector
        primitive-unwrap-machine-word(selector.raw-selector))
     end);
 end;
+
+define function objc/instance-size (objc-class :: <objc/class>)
+  raw-as-integer
+      (%call-c-function ("class_getInstanceSize")
+            (objc-class :: <raw-machine-word>)
+         => (size :: <raw-machine-word>)
+          (primitive-unwrap-machine-word(objc-class.raw-class))
+       end)
+end;
