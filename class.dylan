@@ -17,7 +17,11 @@ define function objc/get-class (name :: <string>)
            => (object :: <raw-machine-word>)
             (primitive-string-as-raw(name))
          end);
-  make(<objc/class>, class: raw-objc-class)
+  if (raw-objc-class ~= 0)
+    make(<objc/class>, class: raw-objc-class)
+  else
+    #f
+  end if
 end;
 
 define function objc/class-name (objc-class :: <objc/class>)

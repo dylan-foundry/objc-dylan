@@ -15,6 +15,8 @@ define test objc-class-test ()
   check-equal("Can get NSObject class",
               objc/class-name(objc/get-class("NSObject")),
               "NSObject");
+  check-false("Can't get invalid class",
+              objc/get-class("Does Not Exist"));
 end test objc-class-test;
 
 define test objc-class-instance-size-test ()
