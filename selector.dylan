@@ -28,3 +28,16 @@ define function objc/selector-name (objc-selector :: <objc/selector>)
           (primitive-unwrap-machine-word(objc-selector.raw-selector))
        end)
 end;
+
+define sealed method \=
+    (sel1 :: <objc/selector>, sel2 :: <objc/selector>)
+ => (equal? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("sel_isEqual")
+        (sel1 :: <raw-machine-word>,
+         sel2 :: <raw-machine-word>)
+     => (equal? :: <raw-boolean>)
+      (primitive-unwrap-machine-word(sel1.raw-selector),
+       primitive-unwrap-machine-word(sel2.raw-selector))
+    end)
+end;
