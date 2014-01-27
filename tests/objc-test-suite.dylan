@@ -42,9 +42,9 @@ end test objc-selector-equal-test;
 define test objc-responds-to-test ()
   let ns-object = objc/get-class("NSObject");
   check-true("NSObject responds to description",
-             objc/class-responds-to-selector(ns-object, objc/register-selector("description")));
+             objc/class-responds-to-selector?(ns-object, objc/register-selector("description")));
   check-false("NSObject doesn't responds to allocFoobar",
-              objc/class-responds-to-selector(ns-object, objc/register-selector("allocFoobar")));
+              objc/class-responds-to-selector?(ns-object, objc/register-selector("allocFoobar")));
 end test objc-responds-to-test;
 
 define test objc-get-class-method-test ()

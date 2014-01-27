@@ -33,7 +33,7 @@ define function objc/class-name (objc-class :: <objc/class>)
        end)
 end;
 
-define function objc/class-responds-to-selector
+define function objc/class-responds-to-selector?
     (objc-class :: <objc/class>, selector :: <objc/selector>)
  => (well? :: <boolean>)
   primitive-raw-as-boolean
