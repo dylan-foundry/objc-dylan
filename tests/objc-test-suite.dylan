@@ -1,16 +1,6 @@
 module: objc-test-suite
 synopsis: Test suite for the objc library.
 
-define suite objc-test-suite ()
-  test objc-class-test;
-  test objc-class-instance-size-test;
-  test objc-selector-test;
-  test objc-selector-equal-test;
-  test objc-responds-to-test;
-  test objc-get-class-method-test;
-  test objc-get-instance-method-test;
-end suite;
-
 define test objc-class-test ()
   check-equal("Can get NSObject class",
               objc/class-name(objc/get-class("NSObject")),
@@ -87,3 +77,13 @@ define function alloc-test ()
 end;
 
 */
+
+define suite objc-test-suite ()
+  test objc-class-test;
+  test objc-class-instance-size-test;
+  test objc-selector-test;
+  test objc-selector-equal-test;
+  test objc-responds-to-test;
+  test objc-get-class-method-test;
+  test objc-get-instance-method-test;
+end suite;
