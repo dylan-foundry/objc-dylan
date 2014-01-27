@@ -19,12 +19,15 @@ define module objc
          objc/class-name,
          objc/class-responds-to-selector?,
          objc/get-class-method,
-         objc/get-instance-method;
+         objc/get-instance-method,
+         raw-class;
 
   export <objc/selector>,
          objc/register-selector,
-         objc/selector-name;
+         objc/selector-name,
+         raw-selector;
 
   export <objc/method>,
-         objc/method-name;
+         objc/method-name,
+         raw-method;
 end module;
