@@ -36,7 +36,7 @@ define test objc-selector-equal-test ()
   let sel3 = objc/register-selector("hello");
   check-true("Same selectors are equal", sel1 = sel1);
   check-true("Same, but created separately, selectors are equal", sel1 = sel3);
-  check-false("Different selects are not equal", sel1 = sel2);
+  check-false("Different selectors are not equal", sel1 = sel2);
 end test objc-selector-equal-test;
 
 define test objc-responds-to-test ()
