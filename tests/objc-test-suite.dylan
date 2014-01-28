@@ -59,24 +59,29 @@ define test objc-get-instance-method-test ()
               objc/get-instance-method(ns-object, bad-method-SEL));
 end test objc-get-instance-method-test;
 
-/*
-Do something with this soon ...
-
-define function alloc-test ()
+define test objc-alloc-test ()
   let c = objc/get-class("NSObject");
   let s = objc/register-selector("alloc");
   let o
     = primitive-wrap-machine-word
-        (%call-c-function("objc_msgSend")
-              (id :: <raw-machine-word>, sel :: <raw-machine-word>)
-           => (obj :: <raw-machine-word>)
-            (primitive-unwrap-machine-word(c.raw-class),
-             primitive-unwrap-machine-word(s.raw-selector))
-        end);
-  o
-end;
-
-*/
+        (%objc-msgsend (primitive-unwrap-machine-word(c.raw-class),
+                        primitive-unwrap-machine-word(s.raw-selector))
+             ()
+          => (obj :: <raw-machine-word>)
+           ()
+         end);
+  let rcs = objc/register-selector("retainCount");
+  let rc
+    = raw-as-integer
+        (%objc-msgsend (primitive-unwrap-machine-word(o),
+                        primitive-unwrap-machine-word(rcs.raw-selector))
+             ()
+          => (count :: <raw-c-signed-int>)
+          ()
+         end);
+  check-equal("Newly created object has a retain count of 1",
+              rc, 1);
+end test objc-alloc-test;
 
 define suite objc-test-suite ()
   test objc-class-test;
@@ -86,4 +91,5 @@ define suite objc-test-suite ()
   test objc-responds-to-test;
   test objc-get-class-method-test;
   test objc-get-instance-method-test;
+  test objc-alloc-test;
 end suite;
