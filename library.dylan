@@ -10,7 +10,7 @@ define library objc
 end library;
 
 define module objc
-  use dylan-direct-c-ffi;
+  use dylan-direct-c-ffi, export: all;
   use common-dylan, exclude: { format-to-string };
 
   export <objc/class>,
