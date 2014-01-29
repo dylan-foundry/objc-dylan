@@ -59,21 +59,27 @@ define test objc-get-instance-method-test ()
               objc/get-instance-method(ns-object, bad-method-SEL));
 end test objc-get-instance-method-test;
 
-define test objc-alloc-test ()
-  let c = objc/get-class("NSObject");
-  let s = objc/register-selector("alloc");
-  let o
+
+define function alloc-nsobject () => (objc-instance :: <objc/instance>)
+  let ns-object = objc/get-class("NSObject");
+  let alloc-selector = objc/register-selector("alloc");
+  let raw-instance
     = primitive-wrap-machine-word
-        (%objc-msgsend (primitive-unwrap-machine-word(c.raw-class),
-                        primitive-unwrap-machine-word(s.raw-selector))
+        (%objc-msgsend (primitive-unwrap-machine-word(ns-object.raw-class),
+                        primitive-unwrap-machine-word(alloc-selector.raw-selector))
              ()
           => (obj :: <raw-machine-word>)
            ()
          end);
+  make(<objc/instance>, instance: raw-instance);
+end;
+
+define test objc-msgsend-test ()
+  let objc-instance = alloc-nsobject();
   let rcs = objc/register-selector("retainCount");
   let rc
     = raw-as-integer
-        (%objc-msgsend (primitive-unwrap-machine-word(o),
+        (%objc-msgsend (primitive-unwrap-machine-word(objc-instance.raw-instance),
                         primitive-unwrap-machine-word(rcs.raw-selector))
              ()
           => (count :: <raw-c-signed-int>)
@@ -81,10 +87,20 @@ define test objc-alloc-test ()
          end);
   check-equal("Newly created object has a retain count of 1",
               rc, 1);
-  let i = make(<objc/instance>, instance: o);
+end test objc-msgsend-test;
+
+define test objc-instance-class-test ()
+  let objc-instance = alloc-nsobject();
+  let class-name = objc/class-name(objc/instance-class(objc-instance));
+  check-equal("Newly created object has the correct class",
+              class-name, "NSObject");
+end test objc-instance-class-test;
+
+define test objc-instance-class-name-test ()
+  let objc-instance = alloc-nsobject();
   check-equal("Newly created object has the correct class name",
-              objc/instance-class-name(i), "NSObject");
-end test objc-alloc-test;
+              objc/instance-class-name(objc-instance), "NSObject");
+end test objc-instance-class-name-test;
 
 define suite objc-test-suite ()
   test objc-class-test;
@@ -94,5 +110,7 @@ define suite objc-test-suite ()
   test objc-responds-to-test;
   test objc-get-class-method-test;
   test objc-get-instance-method-test;
-  test objc-alloc-test;
+  test objc-msgsend-test;
+  test objc-instance-class-test;
+  test objc-instance-class-name-test;
 end suite;
