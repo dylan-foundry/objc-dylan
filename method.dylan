@@ -8,6 +8,12 @@ define class <objc/method> (<object>)
     required-init-keyword: method:;
 end;
 
+define sealed method \=
+    (method1 :: <objc/method>, method2 :: <objc/method>)
+ => (equal? :: <boolean>)
+  method1.raw-method = method2.raw-method
+end;
+
 define function objc/method-name (objc-method :: <objc/method>)
  => (objc-method-selector :: <objc/selector>)
   let raw-objc-selector

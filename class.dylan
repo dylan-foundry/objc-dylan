@@ -8,6 +8,12 @@ define class <objc/class> (<object>)
     required-init-keyword: class:;
 end;
 
+define sealed method \=
+    (class1 :: <objc/class>, class2 :: <objc/class>)
+ => (equal? :: <boolean>)
+  class1.raw-class = class2.raw-class
+end;
+
 define function objc/get-class (name :: <string>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
