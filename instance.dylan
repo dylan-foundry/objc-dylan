@@ -22,8 +22,8 @@ define function objc/instance-class (objc-instance :: <objc/instance>)
   let raw-objc-class
     = primitive-wrap-machine-word
         (%call-c-function ("object_getClass")
-              (name :: <raw-machine-word>)
-           => (object :: <raw-machine-word>)
+              (objc-instance :: <raw-machine-word>)
+           => (objc-class :: <raw-machine-word>)
             (primitive-unwrap-machine-word(objc-instance.raw-instance))
          end);
   make(<objc/class>, class: raw-objc-class)
@@ -33,10 +33,10 @@ define function objc/instance-class-name (objc-instance :: <objc/instance>)
  => (objc-class-name :: <string>)
    primitive-raw-as-string
       (%call-c-function ("object_getClassName")
-            (name :: <raw-machine-word>)
-         => (object :: <raw-machine-word>)
+            (objc-instance :: <raw-machine-word>)
+         => (name :: <raw-machine-word>)
           (primitive-unwrap-machine-word(objc-instance.raw-instance))
-       end);
+       end)
 end;
 
 define generic objc/associated-object
