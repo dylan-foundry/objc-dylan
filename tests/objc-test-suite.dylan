@@ -102,6 +102,18 @@ define test objc-instance-class-name-test ()
               objc/instance-class-name(objc-instance), "NSObject");
 end test objc-instance-class-name-test;
 
+define test objc-associated-objects-test ()
+  let objc-instance = alloc-nsobject();
+  check-equal("Newly created object hasn't got associated object",
+              objc/associated-object(objc-instance, "foobar"), $nil);
+  objc/set-associated-object(objc-instance, "foobar", objc-instance, $OBJC-ASSOCIATION-ASSIGN);
+  check-equal("Adding an associated object works",
+              objc/associated-object(objc-instance, "foobar"), objc-instance);
+  objc/remove-associated-objects(objc-instance);
+  check-equal("Removing associated objects works",
+              objc/associated-object(objc-instance, "foobar"), $nil);
+end test objc-associated-objects-test;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -113,4 +125,5 @@ define suite objc-test-suite ()
   test objc-msgsend-test;
   test objc-instance-class-test;
   test objc-instance-class-name-test;
+  test objc-associated-objects-test;
 end suite;

@@ -34,5 +34,15 @@ define module objc
   export <objc/instance>,
          objc/instance-class,
          objc/instance-class-name,
-         raw-instance;
+         objc/associated-object,
+         objc/set-associated-object,
+         objc/remove-associated-objects,
+         raw-instance,
+         $nil;
+
+  export $OBJC-ASSOCIATION-ASSIGN,
+         $OBJC-ASSOCIATION-RETAIN-NONATOMIC,
+         $OBJC-ASSOCIATION-COPY-NONATOMIC,
+         $OBJC-ASSOCIATION-RETURN,
+         $OBJC-ASSOCIATION-COPY;
 end module;
