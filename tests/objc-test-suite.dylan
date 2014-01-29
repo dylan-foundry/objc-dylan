@@ -65,8 +65,7 @@ define function alloc-nsobject () => (objc-instance :: <objc/instance>)
   let alloc-selector = objc/register-selector("alloc");
   let raw-instance
     = primitive-wrap-machine-word
-        (%objc-msgsend (primitive-unwrap-machine-word(ns-object.raw-class),
-                        primitive-unwrap-machine-word(alloc-selector.raw-selector))
+        (%objc-msgsend (ns-object.as-raw-class, alloc-selector.as-raw-selector)
              ()
           => (obj :: <raw-machine-word>)
            ()
@@ -79,8 +78,7 @@ define test objc-msgsend-test ()
   let rcs = objc/register-selector("retainCount");
   let rc
     = raw-as-integer
-        (%objc-msgsend (primitive-unwrap-machine-word(objc-instance.raw-instance),
-                        primitive-unwrap-machine-word(rcs.raw-selector))
+        (%objc-msgsend (objc-instance.as-raw-instance, rcs.as-raw-selector)
              ()
           => (count :: <raw-c-signed-int>)
           ()

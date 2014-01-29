@@ -8,6 +8,10 @@ define class <objc/method> (<object>)
     required-init-keyword: method:;
 end;
 
+define inline function as-raw-method (objc-method :: <objc/method>)
+  primitive-unwrap-machine-word(objc-method.raw-method)
+end;
+
 define sealed method \=
     (method1 :: <objc/method>, method2 :: <objc/method>)
  => (equal? :: <boolean>)
@@ -21,7 +25,7 @@ define function objc/method-name (objc-method :: <objc/method>)
         (%call-c-function ("method_getName")
               (name :: <raw-machine-word>)
            => (object :: <raw-machine-word>)
-            (primitive-unwrap-machine-word(objc-method.raw-method))
+            (objc-method.as-raw-method)
          end);
   make(<objc/selector>, selector: raw-objc-selector)
 end;

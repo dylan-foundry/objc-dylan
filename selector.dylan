@@ -8,6 +8,10 @@ define class <objc/selector> (<object>)
     required-init-keyword: selector:;
 end;
 
+define inline function as-raw-selector (objc-selector :: <objc/selector>)
+  primitive-unwrap-machine-word(objc-selector.raw-selector)
+end;
+
 define function objc/register-selector (name :: <string>)
  => (objc-selector :: <objc/selector>)
   let raw-objc-selector
@@ -26,7 +30,7 @@ define function objc/selector-name (objc-selector :: <objc/selector>)
       (%call-c-function ("sel_getName")
             (objc-class :: <raw-machine-word>)
          => (name :: <raw-byte-string>)
-          (primitive-unwrap-machine-word(objc-selector.raw-selector))
+          (objc-selector.as-raw-selector)
        end)
 end;
 
@@ -38,7 +42,6 @@ define sealed method \=
         (sel1 :: <raw-machine-word>,
          sel2 :: <raw-machine-word>)
      => (equal? :: <raw-boolean>)
-      (primitive-unwrap-machine-word(sel1.raw-selector),
-       primitive-unwrap-machine-word(sel2.raw-selector))
+      (sel1.as-raw-selector, sel2.as-raw-selector)
     end)
 end;

@@ -8,6 +8,10 @@ define class <objc/instance> (<object>)
     required-init-keyword: instance:;
 end;
 
+define inline function as-raw-instance (objc-instance :: <objc/instance>)
+  primitive-unwrap-machine-word(objc-instance.raw-instance)
+end;
+
 define sealed method \=
     (instance1 :: <objc/instance>, instance2 :: <objc/instance>)
  => (equal? :: <boolean>)
@@ -24,7 +28,7 @@ define function objc/instance-class (objc-instance :: <objc/instance>)
         (%call-c-function ("object_getClass")
               (objc-instance :: <raw-machine-word>)
            => (objc-class :: <raw-machine-word>)
-            (primitive-unwrap-machine-word(objc-instance.raw-instance))
+            (objc-instance.as-raw-instance)
          end);
   make(<objc/class>, class: raw-objc-class)
 end;
@@ -35,7 +39,7 @@ define function objc/instance-class-name (objc-instance :: <objc/instance>)
       (%call-c-function ("object_getClassName")
             (objc-instance :: <raw-machine-word>)
          => (name :: <raw-machine-word>)
-          (primitive-unwrap-machine-word(objc-instance.raw-instance))
+          (objc-instance.as-raw-instance)
        end)
 end;
 
@@ -59,7 +63,7 @@ define method objc/associated-object
               (objc-instance :: <raw-machine-word>,
                key :: <raw-machine-word>)
            => (associated-object :: <raw-machine-word>)
-            (primitive-unwrap-machine-word(objc-instance.raw-instance),
+            (objc-instance.as-raw-instance,
              primitive-unwrap-machine-word(key))
          end);
   if (raw-associated-object ~= 0)
@@ -98,9 +102,9 @@ define method objc/set-associated-object
        key :: <raw-machine-word>, value :: <raw-machine-word>,
        association-policy :: <raw-c-unsigned-int>)
    => (nothing :: <raw-c-void>)
-    (primitive-unwrap-machine-word(objc-instance.raw-instance),
+    (objc-instance.as-raw-instance,
      primitive-unwrap-machine-word(key),
-     primitive-unwrap-machine-word(value.raw-instance),
+     value.as-raw-instance,
      integer-as-raw(association-policy))
   end;
 end;
@@ -111,6 +115,6 @@ define function objc/remove-associated-objects
   %call-c-function ("objc_removeAssociatedObjects")
       (objc-instance :: <raw-machine-word>)
    => (nothing :: <raw-c-void>)
-    (primitive-unwrap-machine-word(objc-instance.raw-instance))
+    (objc-instance.as-raw-instance)
   end;
 end;

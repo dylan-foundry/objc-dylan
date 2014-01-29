@@ -8,6 +8,10 @@ define class <objc/class> (<object>)
     required-init-keyword: class:;
 end;
 
+define inline function as-raw-class (objc-class :: <objc/class>)
+  primitive-unwrap-machine-word(objc-class.raw-class)
+end;
+
 define sealed method \=
     (class1 :: <objc/class>, class2 :: <objc/class>)
  => (equal? :: <boolean>)
@@ -36,7 +40,7 @@ define function objc/class-name (objc-class :: <objc/class>)
       (%call-c-function ("class_getName")
             (objc-class :: <raw-machine-word>)
          => (name :: <raw-byte-string>)
-          (primitive-unwrap-machine-word(objc-class.raw-class))
+          (objc-class.as-raw-class)
        end)
 end;
 
@@ -48,8 +52,8 @@ define function objc/class-responds-to-selector?
         (objc-class :: <raw-machine-word>,
          selector :: <raw-machine-word>)
      => (well? :: <raw-boolean>)
-      (primitive-unwrap-machine-word(objc-class.raw-class),
-       primitive-unwrap-machine-word(selector.raw-selector))
+      (objc-class.as-raw-class,
+       selector.as-raw-selector)
     end);
 end;
 
@@ -59,7 +63,7 @@ define function objc/instance-size (objc-class :: <objc/class>)
       (%call-c-function ("class_getInstanceSize")
             (objc-class :: <raw-machine-word>)
          => (size :: <raw-machine-word>)
-          (primitive-unwrap-machine-word(objc-class.raw-class))
+          (objc-class.as-raw-class)
        end)
 end;
 
@@ -72,8 +76,8 @@ define function objc/get-class-method
              (objc-class :: <raw-machine-word>,
               selector :: <raw-machine-word>)
           => (method? :: <raw-machine-word>)
-           (primitive-unwrap-machine-word(objc-class.raw-class),
-            primitive-unwrap-machine-word(selector.raw-selector))
+           (objc-class.as-raw-class,
+            selector.as-raw-selector)
          end);
   if (raw-method ~= 0)
     make(<objc/method>, method: raw-method)
@@ -91,8 +95,8 @@ define function objc/get-instance-method
              (objc-class :: <raw-machine-word>,
               selector :: <raw-machine-word>)
           => (method? :: <raw-machine-word>)
-           (primitive-unwrap-machine-word(objc-class.raw-class),
-            primitive-unwrap-machine-word(selector.raw-selector))
+           (objc-class.as-raw-class,
+            selector.as-raw-selector)
          end);
   if (raw-method ~= 0)
     make(<objc/method>, method: raw-method)

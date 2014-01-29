@@ -20,16 +20,16 @@ define module objc
          objc/class-responds-to-selector?,
          objc/get-class-method,
          objc/get-instance-method,
-         raw-class;
+         as-raw-class;
 
   export <objc/selector>,
          objc/register-selector,
          objc/selector-name,
-         raw-selector;
+         as-raw-selector;
 
   export <objc/method>,
          objc/method-name,
-         raw-method;
+         as-raw-method;
 
   export <objc/instance>,
          objc/instance-class,
@@ -37,7 +37,7 @@ define module objc
          objc/associated-object,
          objc/set-associated-object,
          objc/remove-associated-objects,
-         raw-instance,
+         as-raw-instance,
          $nil;
 
   export $OBJC-ASSOCIATION-ASSIGN,
