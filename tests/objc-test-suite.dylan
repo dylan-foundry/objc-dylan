@@ -81,6 +81,9 @@ define test objc-alloc-test ()
          end);
   check-equal("Newly created object has a retain count of 1",
               rc, 1);
+  let i = make(<objc/instance>, instance: o);
+  check-equal("Newly created object has the correct class name",
+              objc/instance-class-name(i), "NSObject");
 end test objc-alloc-test;
 
 define suite objc-test-suite ()

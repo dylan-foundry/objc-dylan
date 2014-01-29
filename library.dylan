@@ -30,4 +30,9 @@ define module objc
   export <objc/method>,
          objc/method-name,
          raw-method;
+
+  export <objc/instance>,
+         objc/instance-class,
+         objc/instance-class-name,
+         raw-instance;
 end module;
