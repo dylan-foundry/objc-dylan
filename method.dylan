@@ -9,6 +9,7 @@ define class <objc/method> (<object>)
 end;
 
 define function objc/method-name (objc-method :: <objc/method>)
+ => (objc-method-selector :: <objc/selector>)
   let raw-objc-selector
     = primitive-wrap-machine-word
         (%call-c-function ("method_getName")

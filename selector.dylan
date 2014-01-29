@@ -21,6 +21,7 @@ define function objc/register-selector (name :: <string>)
 end;
 
 define function objc/selector-name (objc-selector :: <objc/selector>)
+ => (selector-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("sel_getName")
             (objc-class :: <raw-machine-word>)

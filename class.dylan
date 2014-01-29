@@ -25,6 +25,7 @@ define function objc/get-class (name :: <string>)
 end;
 
 define function objc/class-name (objc-class :: <objc/class>)
+ => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
             (objc-class :: <raw-machine-word>)
@@ -47,6 +48,7 @@ define function objc/class-responds-to-selector?
 end;
 
 define function objc/instance-size (objc-class :: <objc/class>)
+ => (objc-instance-size :: <integer>)
   raw-as-integer
       (%call-c-function ("class_getInstanceSize")
             (objc-class :: <raw-machine-word>)
