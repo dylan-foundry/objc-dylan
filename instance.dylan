@@ -6,6 +6,7 @@ copyright: See LICENSE file in this distribution.
 define class <objc/instance> (<object>)
   constant slot raw-instance :: <machine-word>,
     required-init-keyword: instance:;
+  constant each-subclass slot instance-objc-class :: <objc/class>;
 end;
 
 define inline function as-raw-instance (objc-instance :: <objc/instance>)
