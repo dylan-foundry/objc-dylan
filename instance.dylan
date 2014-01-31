@@ -21,7 +21,7 @@ end;
 define constant $nil = make(<objc/instance>,
                             instance: as(<machine-word>, 0));
 
-define function objc/instance-class (objc-instance :: <objc/instance>)
+define method objc/instance-class (objc-instance :: <objc/instance>)
  => (objc-class :: <objc/class>)
   let raw-objc-class
     = primitive-wrap-machine-word
@@ -29,6 +29,18 @@ define function objc/instance-class (objc-instance :: <objc/instance>)
               (objc-instance :: <raw-machine-word>)
            => (objc-class :: <raw-machine-word>)
             (objc-instance.as-raw-instance)
+         end);
+  make(<objc/class>, class: raw-objc-class)
+end;
+
+define method objc/instance-class (objc-instance :: <machine-word>)
+ => (objc-class :: <objc/class>)
+  let raw-objc-class
+    = primitive-wrap-machine-word
+        (%call-c-function ("object_getClass")
+              (objc-instance :: <raw-machine-word>)
+           => (objc-class :: <raw-machine-word>)
+            (primitive-unwrap-machine-word(objc-instance))
          end);
   make(<objc/class>, class: raw-objc-class)
 end;
