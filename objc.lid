@@ -6,4 +6,5 @@ files: library
        method
        class
        instance
+       macros
 c-libraries: -lobjc

@@ -45,4 +45,7 @@ define module objc
          $OBJC-ASSOCIATION-COPY-NONATOMIC,
          $OBJC-ASSOCIATION-RETURN,
          $OBJC-ASSOCIATION-COPY;
+
+  export \objc-class-definer,
+         \objc-protocol-definer;
 end module;
