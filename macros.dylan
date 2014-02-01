@@ -30,3 +30,6 @@ end;
 
 define objc-protocol <<ns/object>>;
 define objc-shadow-class <ns/object> (<objc/instance>, <<ns/object>>) => NSObject;
+
+define constant $nil = make(<ns/object>,
+                            instance: as(<machine-word>, 0));

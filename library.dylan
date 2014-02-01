@@ -42,8 +42,7 @@ define module objc
          objc/associated-object,
          objc/set-associated-object,
          objc/remove-associated-objects,
-         as-raw-instance,
-         $nil;
+         as-raw-instance;
 
   export $OBJC-ASSOCIATION-ASSIGN,
          $OBJC-ASSOCIATION-RETAIN-NONATOMIC,
@@ -55,5 +54,6 @@ define module objc
          \objc-protocol-definer;
 
   export <ns/object>,
-         <<ns/object>>;
+         <<ns/object>>,
+         $nil;
 end module;

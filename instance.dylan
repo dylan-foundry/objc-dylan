@@ -3,7 +3,7 @@ synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define class <objc/instance> (<object>)
+define abstract class <objc/instance> (<object>)
   constant slot raw-instance :: <machine-word>,
     required-init-keyword: instance:;
   constant each-subclass slot instance-objc-class :: <objc/class>;
@@ -27,9 +27,6 @@ define inline function objc/make-instance
   let shadow-class = objc/shadow-class-for(raw-objc-class);
   make(shadow-class, instance: raw-instance)
 end;
-
-define constant $nil = make(<objc/instance>,
-                            instance: as(<machine-word>, 0));
 
 define method objc/instance-class (objc-instance :: <objc/instance>)
  => (objc-class :: <objc/class>)
