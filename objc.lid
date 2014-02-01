@@ -7,4 +7,5 @@ files: library
        class
        instance
        macros
+       base-definitions
 c-libraries: -lobjc
