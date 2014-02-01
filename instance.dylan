@@ -87,7 +87,7 @@ define method objc/associated-object
              primitive-unwrap-machine-word(key))
          end);
   if (raw-associated-object ~= 0)
-    make(<objc/instance>, instance: raw-associated-object)
+    objc/make-instance(raw-associated-object);
   else
     $nil
   end if;
