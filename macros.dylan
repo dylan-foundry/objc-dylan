@@ -10,8 +10,8 @@ define macro objc-protocol-definer
   }
 end;
 
-define macro objc-class-definer
-  { define objc-class ?:name (?supers) => ?objc-name:name }
+define macro objc-shadow-class-definer
+  { define objc-shadow-class ?:name (?supers) => ?objc-name:name }
     => { define constant "$" ## ?objc-name = objc/get-class(?"objc-name");
          define class ?name (?supers)
            inherited slot instance-objc-class, init-value: "$" ## ?objc-name;
@@ -28,4 +28,4 @@ define macro objc-class-definer
 end;
 
 define objc-protocol <<ns/object>>;
-define objc-class <ns/object> (<objc/instance>, <<ns/object>>) => NSObject;
+define objc-shadow-class <ns/object> (<objc/instance>, <<ns/object>>) => NSObject;

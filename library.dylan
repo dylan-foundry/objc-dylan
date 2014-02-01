@@ -46,6 +46,6 @@ define module objc
          $OBJC-ASSOCIATION-RETURN,
          $OBJC-ASSOCIATION-COPY;
 
-  export \objc-class-definer,
+  export \objc-shadow-class-definer,
          \objc-protocol-definer;
 end module;
