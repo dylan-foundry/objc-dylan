@@ -19,6 +19,15 @@ define sealed method \=
   instance1.raw-instance = instance2.raw-instance
 end;
 
+define inline function objc/make-instance
+    (raw-instance :: <machine-word>)
+ => (objc-instance :: <objc/instance>)
+  let raw-objc-class = objc/raw-instance-class(raw-instance);
+  // This uses the mapping set up above by register-objc-class.
+  let shadow-class = objc/shadow-class-for(raw-objc-class);
+  make(shadow-class, instance: raw-instance)
+end;
+
 define constant $nil = make(<objc/instance>,
                             instance: as(<machine-word>, 0));
 
@@ -34,16 +43,14 @@ define method objc/instance-class (objc-instance :: <objc/instance>)
   make(<objc/class>, class: raw-objc-class)
 end;
 
-define method objc/instance-class (objc-instance :: <machine-word>)
- => (objc-class :: <objc/class>)
-  let raw-objc-class
-    = primitive-wrap-machine-word
-        (%call-c-function ("object_getClass")
-              (objc-instance :: <raw-machine-word>)
-           => (objc-class :: <raw-machine-word>)
-            (primitive-unwrap-machine-word(objc-instance))
-         end);
-  make(<objc/class>, class: raw-objc-class)
+define method objc/raw-instance-class (objc-instance :: <machine-word>)
+ => (raw-objc-class :: <machine-word>)
+  primitive-wrap-machine-word
+    (%call-c-function ("object_getClass")
+          (objc-instance :: <raw-machine-word>)
+       => (objc-class :: <raw-machine-word>)
+        (primitive-unwrap-machine-word(objc-instance))
+     end)
 end;
 
 define function objc/instance-class-name (objc-instance :: <objc/instance>)

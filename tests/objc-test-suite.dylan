@@ -70,8 +70,14 @@ define function alloc-nsobject () => (objc-instance :: <objc/instance>)
           => (obj :: <raw-machine-word>)
            ()
          end);
-  make(<objc/instance>, instance: raw-instance);
+  objc/make-instance(raw-instance)
 end;
+
+define test objc-alloc-test ()
+  let objc-instance = alloc-nsobject();
+  check-true("Newly created object is an instance of <ns/object>",
+             instance?(objc-instance, <ns/object>));
+end test objc-alloc-test;
 
 define test objc-msgsend-test ()
   let objc-instance = alloc-nsobject();
@@ -120,6 +126,7 @@ define suite objc-test-suite ()
   test objc-responds-to-test;
   test objc-get-class-method-test;
   test objc-get-instance-method-test;
+  test objc-alloc-test;
   test objc-msgsend-test;
   test objc-instance-class-test;
   test objc-instance-class-name-test;

@@ -22,6 +22,9 @@ define module objc
          objc/get-instance-method,
          as-raw-class;
 
+  export objc/register-shadow-class,
+         objc/shadow-class-for;
+
   export <objc/selector>,
          objc/register-selector,
          objc/selector-name,
@@ -34,6 +37,8 @@ define module objc
   export <objc/instance>,
          objc/instance-class,
          objc/instance-class-name,
+         objc/raw-instance-class,
+         objc/make-instance,
          objc/associated-object,
          objc/set-associated-object,
          objc/remove-associated-objects,
@@ -48,4 +53,7 @@ define module objc
 
   export \objc-shadow-class-definer,
          \objc-protocol-definer;
+
+  export <ns/object>,
+         <<ns/object>>;
 end module;
