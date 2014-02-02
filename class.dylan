@@ -3,7 +3,7 @@ synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define constant $class-registry = make(<table>);
+define constant $shadow-class-registry :: <table> = make(<table>);
 
 define class <objc/class> (<object>)
   constant slot raw-class :: <machine-word>,
@@ -23,13 +23,13 @@ end;
 define function objc/register-shadow-class
     (objc-class :: <objc/class>, shadow-class :: subclass(<objc/instance>))
  => ()
-  $class-registry[objc-class.raw-class] := shadow-class;
+  $shadow-class-registry[objc-class.raw-class] := shadow-class;
 end;
 
 define function objc/shadow-class-for
     (raw-objc-class :: <machine-word>)
  => (shadow-class :: subclass(<objc/instance>))
-  $class-registry[raw-objc-class]
+  $shadow-class-registry[raw-objc-class]
 end;
 
 define function objc/get-class (name :: <string>)
