@@ -23,7 +23,6 @@ define inline function objc/make-instance
     (raw-instance :: <machine-word>)
  => (objc-instance :: <objc/instance>)
   let raw-objc-class = objc/raw-instance-class(raw-instance);
-  // This uses the mapping set up above by register-objc-class.
   let shadow-class = objc/shadow-class-for(raw-objc-class);
   make(shadow-class, instance: raw-instance)
 end;
