@@ -39,7 +39,7 @@ define method objc/instance-class (objc-instance :: <objc/instance>)
   make(<objc/class>, class: raw-objc-class)
 end;
 
-define method objc/raw-instance-class (objc-instance :: <machine-word>)
+define inline method objc/raw-instance-class (objc-instance :: <machine-word>)
  => (raw-objc-class :: <machine-word>)
   primitive-wrap-machine-word
     (%call-c-function ("object_getClass")
