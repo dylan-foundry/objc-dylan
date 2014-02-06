@@ -11,7 +11,7 @@ define library objc
 end library;
 
 define module objc
-  use c-ffi, export: { objc-selector-definer, objc-msgsend-body };
+  use c-ffi, export: all;
   use dylan-direct-c-ffi, export: all;
   use common-dylan, exclude: { format-to-string };
 
@@ -37,6 +37,7 @@ define module objc
          as-raw-method;
 
   export <objc/instance>,
+         <objc/instance-address>,
          objc/instance-class,
          objc/instance-class-name,
          objc/raw-instance-class,

@@ -7,6 +7,14 @@ define C-subtype <objc/instance> (<C-statically-typed-pointer>)
   constant each-subclass slot instance-objc-class :: <objc/class>;
 end;
 
+define C-mapped-subtype <objc/instance-address> (<C-void*>)
+  import-map <objc/instance>,
+    import-function:
+      method (address :: <objc/instance-address>) => (objc-instance :: <objc/instance>)
+        objc/make-instance(address.pointer-address)
+      end;
+end;
+
 define inline function as-raw-instance (objc-instance :: <objc/instance>)
   primitive-unwrap-c-pointer(objc-instance)
 end;
