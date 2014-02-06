@@ -1,6 +1,8 @@
 module: objc-test-suite
 synopsis: Test suite for the objc library.
 
+define constant $NSObject = objc/get-class("NSObject");
+
 define test objc-class-test ()
   check-equal("Can get NSObject class",
               objc/class-name(objc/get-class("NSObject")),
@@ -59,55 +61,46 @@ define test objc-get-instance-method-test ()
               objc/get-instance-method(ns-object, bad-method-SEL));
 end test objc-get-instance-method-test;
 
+define objc-selector sel/alloc
+  parameter target :: <objc/class>;
+  result objc-instance :: <objc/instance-address>;
+  selector: "alloc";
+end;
 
-define function alloc-nsobject () => (objc-instance :: <objc/instance>)
-  let ns-object = objc/get-class("NSObject");
-  let alloc-selector = objc/register-selector("alloc");
-  let raw-instance
-    = primitive-wrap-machine-word
-        (%objc-msgsend (ns-object.as-raw-class, alloc-selector.as-raw-selector)
-             ()
-          => (obj :: <raw-machine-word>)
-           ()
-         end);
-  objc/make-instance(raw-instance)
+define objc-selector sel/retain-count
+  parameter target :: <objc/instance>;
+  result retain-count :: <C-int>;
+  selector: "retainCount";
 end;
 
 define test objc-alloc-test ()
-  let objc-instance = alloc-nsobject();
+  let objc-instance = objc-msgsend($NSObject, sel/alloc);
   check-true("Newly created object is an instance of <ns/object>",
              instance?(objc-instance, <ns/object>));
 end test objc-alloc-test;
 
 define test objc-msgsend-test ()
-  let objc-instance = alloc-nsobject();
-  let rcs = objc/register-selector("retainCount");
-  let rc
-    = raw-as-integer
-        (%objc-msgsend (objc-instance.as-raw-instance, rcs.as-raw-selector)
-             ()
-          => (count :: <raw-c-signed-int>)
-          ()
-         end);
+  let objc-instance = objc-msgsend($NSObject, sel/alloc);
+  let rc = objc-msgsend(objc-instance, sel/retain-count);
   check-equal("Newly created object has a retain count of 1",
               rc, 1);
 end test objc-msgsend-test;
 
 define test objc-instance-class-test ()
-  let objc-instance = alloc-nsobject();
+  let objc-instance = objc-msgsend($NSObject, sel/alloc);
   let class-name = objc/class-name(objc/instance-class(objc-instance));
   check-equal("Newly created object has the correct class",
               class-name, "NSObject");
 end test objc-instance-class-test;
 
 define test objc-instance-class-name-test ()
-  let objc-instance = alloc-nsobject();
+  let objc-instance = objc-msgsend($NSObject, sel/alloc);
   check-equal("Newly created object has the correct class name",
               objc/instance-class-name(objc-instance), "NSObject");
 end test objc-instance-class-name-test;
 
 define test objc-associated-objects-test ()
-  let objc-instance = alloc-nsobject();
+  let objc-instance = objc-msgsend($NSObject, sel/alloc);
   check-equal("Newly created object hasn't got associated object",
               objc/associated-object(objc-instance, "foobar"), $nil);
   objc/set-associated-object(objc-instance, "foobar", objc-instance, $OBJC-ASSOCIATION-ASSIGN);
