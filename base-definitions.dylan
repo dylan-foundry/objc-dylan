@@ -8,4 +8,3 @@ define objc-shadow-class <ns/object> (<objc/instance>, <<ns/object>>) => NSObjec
 
 define constant $nil = make(<ns/object>,
                             instance: as(<machine-word>, 0));
-
