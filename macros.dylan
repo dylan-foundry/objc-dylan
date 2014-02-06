@@ -27,3 +27,8 @@ define macro objc-shadow-class-definer
     { } => { }
     { ?:expression, ... } => { ?expression, ... }
 end;
+
+define macro objc-msgsend
+  { objc-msgsend(?target:expression, ?selector:name, ?args:*) }
+    => { "%send-" ## ?selector (?target, ?args) }
+end;

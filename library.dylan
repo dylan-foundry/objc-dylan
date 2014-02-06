@@ -54,7 +54,8 @@ define module objc
          $OBJC-ASSOCIATION-COPY;
 
   export \objc-shadow-class-definer,
-         \objc-protocol-definer;
+         \objc-protocol-definer,
+         \objc-msgsend;
 
   export <ns/object>,
          <<ns/object>>,
