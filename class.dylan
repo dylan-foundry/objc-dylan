@@ -5,25 +5,23 @@ copyright: See LICENSE file in this distribution.
 
 define constant $shadow-class-registry :: <table> = make(<table>);
 
-define class <objc/class> (<object>)
-  constant slot raw-class :: <machine-word>,
-    required-init-keyword: class:;
+define C-subtype <objc/class> (<C-statically-typed-pointer>)
 end;
 
 define inline function as-raw-class (objc-class :: <objc/class>)
-  primitive-unwrap-machine-word(objc-class.raw-class)
+  primitive-unwrap-c-pointer(objc-class)
 end;
 
 define sealed method \=
     (class1 :: <objc/class>, class2 :: <objc/class>)
  => (equal? :: <boolean>)
-  class1.raw-class = class2.raw-class
+  class1.pointer-address = class2.pointer-address
 end;
 
 define function objc/register-shadow-class
     (objc-class :: <objc/class>, shadow-class :: subclass(<objc/instance>))
  => ()
-  $shadow-class-registry[objc-class.raw-class] := shadow-class;
+  $shadow-class-registry[objc-class.pointer-address] := shadow-class;
 end;
 
 define function objc/shadow-class-for
@@ -42,7 +40,7 @@ define function objc/get-class (name :: <string>)
             (primitive-string-as-raw(name))
          end);
   if (raw-objc-class ~= 0)
-    make(<objc/class>, class: raw-objc-class)
+    make(<objc/class>, address: raw-objc-class)
   else
     #f
   end if
@@ -94,7 +92,7 @@ define function objc/get-class-method
             selector.as-raw-selector)
          end);
   if (raw-method ~= 0)
-    make(<objc/method>, method: raw-method)
+    make(<objc/method>, address: raw-method)
   else
     #f
   end if
@@ -113,7 +111,7 @@ define function objc/get-instance-method
             selector.as-raw-selector)
          end);
   if (raw-method ~= 0)
-    make(<objc/method>, method: raw-method)
+    make(<objc/method>, address: raw-method)
   else
     #f
   end if

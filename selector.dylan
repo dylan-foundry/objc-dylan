@@ -3,13 +3,11 @@ synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define class <objc/selector> (<object>)
-  constant slot raw-selector :: <machine-word>,
-    required-init-keyword: selector:;
+define C-subtype <objc/selector> (<C-statically-typed-pointer>)
 end;
 
 define inline function as-raw-selector (objc-selector :: <objc/selector>)
-  primitive-unwrap-machine-word(objc-selector.raw-selector)
+  primitive-unwrap-c-pointer(objc-selector)
 end;
 
 define function objc/register-selector (name :: <string>)
@@ -21,7 +19,7 @@ define function objc/register-selector (name :: <string>)
            => (object :: <raw-machine-word>)
             (primitive-string-as-raw(name))
          end);
-  make(<objc/selector>, selector: raw-objc-selector)
+  make(<objc/selector>, address: raw-objc-selector)
 end;
 
 define function objc/selector-name (objc-selector :: <objc/selector>)

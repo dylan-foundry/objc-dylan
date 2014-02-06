@@ -3,20 +3,18 @@ synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define abstract class <objc/instance> (<object>)
-  constant slot raw-instance :: <machine-word>,
-    required-init-keyword: instance:;
+define C-subtype <objc/instance> (<C-statically-typed-pointer>)
   constant each-subclass slot instance-objc-class :: <objc/class>;
 end;
 
 define inline function as-raw-instance (objc-instance :: <objc/instance>)
-  primitive-unwrap-machine-word(objc-instance.raw-instance)
+  primitive-unwrap-c-pointer(objc-instance)
 end;
 
 define sealed method \=
     (instance1 :: <objc/instance>, instance2 :: <objc/instance>)
  => (equal? :: <boolean>)
-  instance1.raw-instance = instance2.raw-instance
+  instance1.pointer-address = instance2.pointer-address
 end;
 
 define inline function objc/make-instance
@@ -24,7 +22,7 @@ define inline function objc/make-instance
  => (objc-instance :: <objc/instance>)
   let raw-objc-class = objc/raw-instance-class(raw-instance);
   let shadow-class = objc/shadow-class-for(raw-objc-class);
-  make(shadow-class, instance: raw-instance)
+  make(shadow-class, address: raw-instance)
 end;
 
 define method objc/instance-class (objc-instance :: <objc/instance>)
@@ -36,7 +34,7 @@ define method objc/instance-class (objc-instance :: <objc/instance>)
            => (objc-class :: <raw-machine-word>)
             (objc-instance.as-raw-instance)
          end);
-  make(<objc/class>, class: raw-objc-class)
+  make(<objc/class>, address: raw-objc-class)
 end;
 
 define inline method objc/raw-instance-class (objc-instance :: <machine-word>)
@@ -66,11 +64,17 @@ define generic objc/associated-object
 define inline method objc/associated-object
     (objc-instance :: <objc/instance>, key :: <string>)
  => (objc-instance :: <objc/instance>)
-  objc/associated-object(objc-instance,
-                         primitive-wrap-machine-word(primitive-string-as-raw(key)))
+  objc/associated-object-inner(objc-instance,
+                               primitive-wrap-machine-word(primitive-string-as-raw(key)))
 end;
 
 define method objc/associated-object
+    (objc-instance :: <objc/instance>, key :: <machine-word>)
+ => (objc-instance :: <objc/instance>)
+  objc/associated-object-inner(objc-instance, key);
+end;
+
+define inline method objc/associated-object-inner
     (objc-instance :: <objc/instance>, key :: <machine-word>)
  => (objc-instance :: <objc/instance>)
   let raw-associated-object
@@ -104,12 +108,20 @@ define inline method objc/set-associated-object
     (objc-instance :: <objc/instance>, key :: <string>,
      value :: <objc/instance>, association-policy :: <integer>)
  => ()
-  objc/set-associated-object(objc-instance,
-                             primitive-wrap-machine-word(primitive-string-as-raw(key)),
-                             value, association-policy);
+  objc/set-associated-object-inner(objc-instance,
+                                   primitive-wrap-machine-word(primitive-string-as-raw(key)),
+                                   value, association-policy);
 end;
 
 define method objc/set-associated-object
+    (objc-instance :: <objc/instance>, key :: <machine-word>,
+     value :: <objc/instance>, association-policy :: <integer>)
+ => ()
+  objc/set-associated-object-inner(objc-instance, key, value,
+                                   association-policy);
+end;
+
+define inline method objc/set-associated-object-inner
     (objc-instance :: <objc/instance>, key :: <machine-word>,
      value :: <objc/instance>, association-policy :: <integer>)
  => ()
