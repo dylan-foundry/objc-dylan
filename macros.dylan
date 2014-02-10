@@ -1,4 +1,4 @@
-module: objc
+module: objective-c
 synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.

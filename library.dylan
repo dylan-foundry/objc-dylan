@@ -2,15 +2,15 @@ module: dylan-user
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define library objc
+define library objective-c
   use dylan;
   use common-dylan;
   use c-ffi;
 
-  export objc;
+  export objective-c;
 end library;
 
-define module objc
+define module objective-c
   use c-ffi, export: all;
   use dylan-direct-c-ffi, export: all;
   use common-dylan, exclude: { format-to-string };

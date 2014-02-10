@@ -1,4 +1,4 @@
-library: objc
+library: objective-c
 target-type: dll
 executable: objc-dylan
 files: library
