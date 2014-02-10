@@ -21,20 +21,17 @@ define module objc
          objc/class-name,
          objc/class-responds-to-selector?,
          objc/get-class-method,
-         objc/get-instance-method,
-         as-raw-class;
+         objc/get-instance-method;
 
   export objc/register-shadow-class,
          objc/shadow-class-for;
 
   export <objc/selector>,
          objc/register-selector,
-         objc/selector-name,
-         as-raw-selector;
+         objc/selector-name;
 
   export <objc/method>,
-         objc/method-name,
-         as-raw-method;
+         objc/method-name;
 
   export <objc/instance>,
          <objc/instance-address>,
@@ -44,8 +41,7 @@ define module objc
          objc/make-instance,
          objc/associated-object,
          objc/set-associated-object,
-         objc/remove-associated-objects,
-         as-raw-instance;
+         objc/remove-associated-objects;
 
   export $OBJC-ASSOCIATION-ASSIGN,
          $OBJC-ASSOCIATION-RETAIN-NONATOMIC,
