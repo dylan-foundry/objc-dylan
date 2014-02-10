@@ -33,7 +33,7 @@ define inline function objc/make-instance
   make(shadow-class, address: raw-instance)
 end;
 
-define method objc/instance-class (objc-instance :: <objc/instance>)
+define function objc/instance-class (objc-instance :: <objc/instance>)
  => (objc-class :: <objc/class>)
   let raw-objc-class
     = primitive-wrap-machine-word
@@ -45,7 +45,7 @@ define method objc/instance-class (objc-instance :: <objc/instance>)
   make(<objc/class>, address: raw-objc-class)
 end;
 
-define inline method objc/raw-instance-class (objc-instance :: <machine-word>)
+define inline function objc/raw-instance-class (objc-instance :: <machine-word>)
  => (raw-objc-class :: <machine-word>)
   primitive-wrap-machine-word
     (%call-c-function ("object_getClass")
@@ -82,7 +82,7 @@ define method objc/associated-object
   objc/associated-object-inner(objc-instance, key);
 end;
 
-define inline method objc/associated-object-inner
+define inline function objc/associated-object-inner
     (objc-instance :: <objc/instance>, key :: <machine-word>)
  => (objc-instance :: <objc/instance>)
   let raw-associated-object
@@ -129,7 +129,7 @@ define method objc/set-associated-object
                                    association-policy);
 end;
 
-define inline method objc/set-associated-object-inner
+define inline function objc/set-associated-object-inner
     (objc-instance :: <objc/instance>, key :: <machine-word>,
      value :: <objc/instance>, association-policy :: <integer>)
  => ()
