@@ -5,6 +5,144 @@ Objective C / Dylan Bridge
 .. current-library:: objective-c
 .. current-module:: objective-c
 
+The Objective C / Dylan bridge is designed to work with the modern Objective
+C 2.0 run-time as found on recent versions of Mac OS X and iOS. The bridge
+library itself can be found at https://github.com/dylan-foundry/objc-dylan/.
+A pre-release version of Open Dylan 2014.1 is currently required as the
+compiler has been extended to support this library.
+
+.. contents::
+   :local:
+
+Quick Usage
+===========
+
+Objective C selectors (method definitions can be described using the
+:macro:`objc-selector-definer` macro.  Messages can be sent to
+Objective C classes and instances using the :macro:`objc-msgsend`
+macro.
+
+A quick example usage is:
+
+.. code-block:: dylan
+
+   define objc-selector sel/alloc
+     parameter target :: <objc/class>;
+     result objc-instance :: <objc/instance-address>;
+     selector: "alloc";
+   end;
+
+   define objc-selector sel/retain-count
+     parameter target :: <objc/instance>;
+     result retain-count :: <C-int>;
+     selector: "retainCount";
+   end;
+
+   begin
+     let inst = objc-msgsend($NSObject, sel/alloc);
+     let count = objc-msgsend(inst, sel/retain-count);
+   end;
+
+This demonstrates the definition of 2 standard selectors and how to
+invoke them.
+
+Design
+======
+
+Type Safety
+-----------
+
+This bridge library provides a type-safe mechanism for accessing Objective
+C libraries. A library binding must set up a hierarchy of Dylan classes
+that mirror the Objective C class hierarchy using the
+:macro:`objc-shadow-class-definer` macro.
+
+When used correctly, instances of Objective C classes should be able
+to correctly participate in Dylan's method dispatch mechanisms.
+
+To help make this more clear, in Objective C, ``NSNumber`` is a subclass
+of ``NSValue``. In Dylan, we represent this relationship:
+
+.. code-block:: dylan
+
+   define objc-shadow-class <ns/value> (<ns/object>, <<ns/copying>>,
+                                        <<ns/secure-coding>>)
+    => NSValue;
+   define objc-shadow-class <ns/number> (<ns/value>) => NSNumber;
+
+Now, instances of ``NSNumber`` will appear to be of type ``<ns/number>``
+and instances of ``NSValue`` would be of type ``<ns/value>``. This allows
+method definitions such as these to work:
+
+.. code-block:: dylan
+
+   define method print-object (value :: <ns/value>, stream :: <stream>)
+     ...
+   end;
+
+   define method print-object (number :: <ns/number>, stream :: <stream>)
+     ...
+   end;
+
+Performance
+-----------
+
+Attempts have been made to keep the overhead from using the bridge to
+a minimum.  Most Dylan method dispatch has been eliminated (with the
+exception of :func:`objc/make-instance`), and inlining has been used
+as needed to further reduce overhead.
+
+Limitations
+===========
+
+Memory Management
+-----------------
+
+A design is not yet in place for simplifying Objective C memory management
+or integrating it with the Dylan garbage collection. This will be
+provided in a future version of this library.
+
+Not Yet Supported
+-----------------
+
+We do not yet support these features of the Objective C run-time:
+
+* Doing much of anything with :class:`<objc/method>`.
+* Protocol introspection or representing Objective C protocols on
+  the Dylan side.
+* Creating new classes or adding methods to classes.
+* Properties of classes or instances.
+* Access to instance variables.
+
+Patches are welcome. Details about many of these things can be found
+in ``/usr/include/objc/runtime.h``.
+
+Unsupported
+-----------
+
+Functions available in earlier versions of the Objective C run-time
+that has been deprecated or removed are not supported.
+
+The GNU Objective C run-time is also not supported.
+
+Naming Scheme
+=============
+
+Selectors are commonly named with a prefix of ``sel/`` such as
+``sel/alloc``, ``sel/description``. Colons within a selector name
+can be converted to ``/`` as in ``sel/perform-selector/with-object``.
+That example also demonstrates the conversion of the changes in
+case to the more Dylan-like use of hyphenated names.
+
+The "namespace" portion of a class name may be separated from the
+class name with a ``/`` as well for a shadow class:  ``<ns/object>``,
+although the actual Objective C class would be ``$NSObject``.
+
+Protocols are commonly named with double ``<<`` and ``>>`` as with
+``<<ns/object>>`` to distinguish them from a regular class or shadow
+class.
+
+
 The OBJECTIVE-C module
 ======================
 
@@ -13,19 +151,128 @@ Macros
 
 .. macro:: objc-msgsend
 
+   Sends an Objective C message to a target.
+
+   :macrocall:
+     .. code-block:: dylan
+
+        objc-msgsend(*target*, *selector*, *args*)
+
+   :description:
+
+     The selector must be the binding name that refers to the
+     Objective C selector as the name given here is used literrally
+     to construct a function call.
+
+   :example:
+
+     This example:
+
+     .. code-block:: dylan
+
+        let inst = objc-msgsend($NSObject, sel/alloc);
+
+     expands to:
+
+     .. code-block:: dylan
+
+        let inst = %send-sel/alloc($NSObject);
+
 .. macro:: objc-protocol-definer
 
+   :macrocall:
+     .. code-block:: dylan
+
+        define objc-protocol *protocol-name*;
+
+   :description:
+
+     .. note:: This will change in the near future when we introduce improved
+        support for Objective C protocols.
+
+   :example:
+
+      .. code-block:: dylan
+
+         define objc-protocol <<ns/copying>>;
+
+      This currently expands to:
+
+      .. code-block:: dylan
+
+         define abstract class <<ns-copying>> (<object>)
+         end;
+
+.. macro:: objc-selector-definer
+
+   Coming soon!
+
 .. macro:: objc-shadow-class-definer
+
+   :macrocall:
+     .. code-block:: dylan
+
+        define objc-shadow-class *class-name* (*superclasses*)
+          => *objective-c-class*;
+
+   :parameter class-name: The name of the Dylan shadow class.
+   :parameter superclasses: The names of the Dylan shadow superclasses and protocols.
+   :parameter objective-c-class: The name of the Objective C class being shadowed.
+
+   :description:
+
+     The shadow class hierarchy is an important part of how we enable
+     a type-safe binding to an Objective C library.
+
+   :example:
+
+     .. code-block:: dylan
+
+        define objc-shadow-class <ns/value> (<ns/object>, <<ns/copying>>,
+                                             <<ns/secure-coding>>)
+         => NSValue;
+        define objc-shadow-class <ns/number> (<ns/value>) => NSNumber;
+
+     The definition of ``<ns/number>`` would expand to a couple of
+     important definitions:
+
+     .. code-block:: dylan
+
+        define constant $NSNumber = objc/get-class("NSNumber");
+        define class <ns/number> (<ns/value>)
+          inherited slot instance-objc-class, init-value: $NSNumber;
+        end;
+        objc/register-shadow-class($NSNumber, <ns/number>);
+
+     We can see that the important elements are:
+
+     * The constant, ``$NSNumber``, that represents the Objective C class.
+     * The shadow class, ``<ns/number>``.
+     * The shadow class is registered so that :func:`objc/make-instance`
+       can work.
 
 Classes
 -------
 
 .. class:: <objc/class>
 
+   The Dylan representation of an Objective C class object.
+
    :superclasses: <c-statically-typed-pointer>
 
+   :description:
+
+     This class is not meant to be inherited from. To represent
+     an instance of an Objective C class, a subclass of
+     :class:`<objc/instance>` as created by a hierarchy of
+     :macro:`objc-shadow-class-definer` calls would be used.
+
+     Messages may be sent to Objective C classes using instances
+     of this class.
 
 .. function:: objc/class-name
+
+   Returns the name of an Objective C class.
 
    :signature: objc/class-name (objc-class) => (objc-class-name)
 
@@ -34,6 +281,8 @@ Classes
 
 .. function:: objc/class-responds-to-selector?
 
+   Returns whether or not an Objective C class responds to the given selector.
+
    :signature: objc/class-responds-to-selector? (objc-class selector) => (well?)
 
    :parameter objc-class: An instance of :class:`<objc/class>`.
@@ -41,6 +290,8 @@ Classes
    :value well?: An instance of :drm:`<boolean>`.
 
 .. function:: objc/get-class
+
+   Looks up an Objective C class, given its name.
 
    :signature: objc/get-class (name) => (objc-class)
 
@@ -67,14 +318,32 @@ Instances
 ---------
 
 .. class:: <objc/instance>
+   :abstract:
+
+   Represents an instance of an Objective C class.
 
    :superclasses: <c-statically-typed-pointer>
+
+   :description:
+
+     Direct instances of this class are not used. Instead, use instances of
+     subclasses created with :macro:`objc-shadow-class-definer`.
 
 .. constant:: $nil
 
 .. class:: <objc/instance-address>
 
+   Used in :macro:`objc-selector-definer` definitions.
+
    :superclasses: <c-void*>
+
+   :description:
+
+     This class is used as a marker in :macro:`objc-selector-definer`
+     definitions to indicate that the value should be mapped back into the
+     correct instance of a subclass of :class:`<objc/instance>`. This
+     requires that the actual class has been set up correctly as a shadow
+     class.
 
 .. function:: objc/instance-class
 
@@ -109,8 +378,9 @@ Methods
 
 .. class:: <objc/method>
 
-   :superclasses: <c-statically-typed-pointer>
+   Represents an Objective C method object.
 
+   :superclasses: <c-statically-typed-pointer>
 
 .. function:: objc/method-name
 
@@ -124,17 +394,27 @@ Selectors
 
 .. class:: <objc/selector>
 
+   Represents an Objective C selector.
+
    :superclasses: <c-statically-typed-pointer>
 
-
 .. function:: objc/register-selector
+
+   Returns an :class:`<objc/selector>` for the given selector name.
 
    :signature: objc/register-selector (name) => (objc-selector)
 
    :parameter name: An instance of :drm:`<string>`.
    :value objc-selector: An instance of :class:`<objc/selector>`.
 
+   :description:
+
+     This will not usually be called in user code. Instead, the selector
+     is usually defined using :macro:`objc-selector-definer`.
+
 .. function:: objc/selector-name
+
+   Returns the name of the given selector.
 
    :signature: objc/selector-name (objc-selector) => (selector-name)
 
@@ -149,7 +429,7 @@ Associated Objects
    :signature: objc/associated-object (objc-instance key) => (objc-instance)
 
    :parameter objc-instance: An instance of :class:`<objc/instance>`.
-   :parameter key: An instance of ``<object>``.
+   :parameter key: An instance of either a :drm:`<string>` or a :drm:`<symbol>`.
    :value objc-instance: An instance of :class:`<objc/instance>`.
 
 .. function:: objc/remove-associated-objects
@@ -173,7 +453,7 @@ Associated Objects
    :signature: objc/set-associated-object (objc-instance key value association-policy) => ()
 
    :parameter objc-instance: An instance of :class:`<objc/instance>`.
-   :parameter key: An instance of ``<object>``.
+   :parameter key: An instance of either a :drm:`<string>` or a :drm:`<symbol>`.
    :parameter value: An instance of :class:`<objc/instance>`.
    :parameter association-policy: An instance of :drm:`<integer>`.
 
