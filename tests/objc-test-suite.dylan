@@ -111,6 +111,21 @@ define test objc-associated-objects-test ()
               objc/associated-object(objc-instance, "foobar"), $nil);
 end test objc-associated-objects-test;
 
+define test objc-print-object-test ()
+  local method print-to-string (obj)
+          let stream = make(<byte-string-stream>,
+                            direction: #"output",
+                            contents: make(<byte-string>,
+                                           size: 1000));
+          format(stream, "%=", obj);
+          stream-contents(stream)
+        end;
+  assert-equal("{<objc/selector> alloc}",
+               print-to-string(sel/alloc));
+  assert-equal("{<objc/class> NSObject}",
+               print-to-string($NSObject));
+end test objc-print-object-test;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -124,4 +139,5 @@ define suite objc-test-suite ()
   test objc-instance-class-test;
   test objc-instance-class-name-test;
   test objc-associated-objects-test;
+  test objc-print-object-test;
 end suite;

@@ -10,6 +10,12 @@ define inline function as-raw-selector (objc-selector :: <objc/selector>)
   primitive-unwrap-c-pointer(objc-selector)
 end;
 
+define sideways method print-object
+    (s :: <objc/selector>, stream :: <stream>)
+ => ()
+  format(stream, "{<objc/selector> %s}", objc/selector-name(s));
+end;
+
 define function objc/register-selector (name :: <string>)
  => (objc-selector :: <objc/selector>)
   let raw-objc-selector

@@ -6,6 +6,7 @@ define library objective-c
   use dylan;
   use common-dylan;
   use c-ffi;
+  use io;
 
   export objective-c;
 end library;
@@ -14,6 +15,9 @@ define module objective-c
   use c-ffi, export: all;
   use dylan-direct-c-ffi, export: all;
   use common-dylan, exclude: { format-to-string };
+  use format;
+  use print, import: { print-object };
+  use streams;
 
   export <objc/class>,
          objc/get-class,

@@ -18,6 +18,12 @@ define sealed method \=
   class1.pointer-address = class2.pointer-address
 end;
 
+define sideways method print-object
+    (c :: <objc/class>, stream :: <stream>)
+ => ()
+  format(stream, "{<objc/class> %s}", objc/class-name(c));
+end;
+
 define function objc/register-shadow-class
     (objc-class :: <objc/class>, shadow-class :: subclass(<objc/instance>))
  => ()
