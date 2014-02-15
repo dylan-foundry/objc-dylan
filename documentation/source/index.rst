@@ -204,8 +204,147 @@ Macros
          end;
 
 .. macro:: objc-selector-definer
+   :defining:
 
-   Coming soon!
+   Describe Objective C selectors to the *c-ffi*.
+
+   :macrocall:
+     .. code-block:: dylan
+
+       define objc-selector *name*
+         [*parameter-spec*; ...]
+         [*result-spec*;]
+         [*function-option*, ...;]
+       end [C-function] [*name*]
+
+   :parameter name: A Dylan variable name.
+   :parameter parameter-spec:
+   :parameter result-spec:
+   :parameter function-option: A property list.
+
+   :description:
+
+     Describes an Objective C selector to the C-FFI. In order for a
+     selector to be invoked correctly by Dylan, the same information
+     about the selector must be given as is needed by C callers,
+     including the selector's name and the types of its parameters
+     and results.
+
+     The result of processing a ``define objc-selector`` definition is a
+     Dylan function and a constant bound to *name*. This function takes Dylan
+     objects as arguments, converting them to their C representations
+     according to the types declared for the parameters of the C
+     function before invoking the selector with them. If the corresponding
+     Objective C method returns results, these results are converted to Dylan
+     representations according to the declared types of those results
+     before being returned to the Dylan caller of the function. By
+     default the function created is a raw function, not a generic
+     function. A generic function method can defined by using the
+     *generic-function-method:* option.
+
+     The *selector:* function option must be supplied with a constant
+     string value for the name of the selector.
+
+     There must be at least one parameter specification. The first parameter specifies
+     the target of the method, so it should be either an Objective C class or an
+     object instance.
+
+     A parameter-spec has the following syntax::
+
+       [*adjectives*] parameter name :: *c-type* #key *c-name*
+
+     If only the target parameter is specified, the selector is taken
+     to have no arguments.
+
+     The adjectives can be either *output*, *input*, or both. The
+     calling discipline is specified by the *input* and *output*
+     adjectives.
+
+     By itself, *input* indicates that the argument is passed into the
+     function by value. This option is the default and is used primarily
+     to document the code. There is a parameter to the generated Dylan
+     function corresponding to each *input* parameter of the C function.
+
+     The *output* adjective specifies that the argument value to the C
+     function is used to identify a location into which an extra result
+     of the C function will be stored. There is no parameter in the
+     generated Dylan function corresponding to an *output* parameter of
+     the C function. The C-FFI generates a location for the extra return
+     value itself and passes it to the C function. When the C function
+     returns, the value in the location is accessed and returned as an
+     extra result from the Dylan function. The C-FFI allocates space for
+     the output parameter’s referenced type, passes a pointer to the
+     allocated space, and returns :gf:`pointer-value` of that pointer. A
+     struct or union type may not be used as an output parameter.
+
+     If both *input* and *output* are supplied, they specify that the
+     argument value to the C function is used to identify a location
+     from which a value is accessed and into which an extra result value
+     is placed by the C function. There is a parameter to the generated
+     Dylan function corresponding to each *input* *output* parameter of
+     the C function that is specialized as the union of the export type
+     of the referenced type of the type given for the parameter in
+     ``define c-function``, and ``#f``. When the C function returns, the
+     value in the location is accessed and returned as an extra result
+     from the Dylan function. If an *input* *output* parameter is passed
+     as ``#f`` from Dylan then a ``NULL`` pointer is passed to the C
+     function, and the extra value returned by the Dylan function will
+     be ``#f``.
+
+     Note that neither *output* nor *input* *output* affects the
+     declared type of an argument: it must have the same type it has in
+     C and so, because it represents a location, must be a pointer type.
+
+     A result-spec has the following syntax::
+
+       result [name :: c-type]
+
+     If no *result* is specified, the Dylan function does not return a
+     value for the C result, and the C function is expected to have a
+     return type of *void*.
+
+     Each *function-option* is a keyword–value pair. The
+     *generic-function-method:* option may be either ``#t`` or ``#f``,
+     indicating whether to add a method to the generic function name or
+     to bind a bare constant method directly to name. The default value
+     for *generic-function-method:* is ``#f``. The option *C-modifiers:*
+     can be used to specify platform dependent modifiers for the C
+     function being called. For example, on Windows, use *C-modifiers:*
+     ``"__stdcall"`` if the C function to be called is defined to be a
+     ``__stdcall`` function.
+
+     In effect, a ``define objc-selector`` such as:
+
+     .. code-block:: dylan
+
+       define objc-selector sel/alloc
+         parameter objc-class :: <objc/class>;
+         result instance :: <objc/instance-address>;
+         c-name: "alloc";
+       end;
+
+     expands into something like:
+
+     .. code-block:: dylan
+
+       define constant sel/alloc = objc/register-selector("alloc");
+       define function %send-sel/alloc (target)
+         let c-target = %as-c-representation(<objc/class>,
+                                             target);
+         let c-result = %objc-msgsend(c-target, sel/alloc);
+         %as-dylan-representation(<objc/instance-address>, c-result)
+       end;
+
+     with the declared type.
+
+   :example:
+     .. code-block:: dylan
+
+        define objc-selector sel/alloc
+          parameter target :: <objc/class>;
+          result objc-instance :: <objc/instance-address>;
+          selector: "alloc";
+        end;
 
 .. macro:: objc-shadow-class-definer
 
