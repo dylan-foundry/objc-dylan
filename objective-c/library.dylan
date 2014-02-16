@@ -31,7 +31,8 @@ define module objective-c
          objc/shadow-class-for;
 
   export objc/allocate-class-pair,
-         objc/register-class-pair;
+         objc/register-class-pair,
+         objc/add-method;
 
   export <objc/selector>,
          objc/register-selector,

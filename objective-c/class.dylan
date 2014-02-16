@@ -159,3 +159,23 @@ define function objc/register-class-pair
     (objc-class.as-raw-class)
   end;
 end;
+
+define function objc/add-method
+    (objc-class :: <objc/class>,
+     selector :: <objc/selector>,
+     implementation :: <c-function-pointer>,
+     types :: <string>)
+ => (added? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("class_addMethod")
+         (objc-class :: <raw-machine-word>,
+          selector :: <raw-machine-word>,
+          implementation :: <raw-machine-word>,
+          types :: <raw-byte-string>)
+      => (added? :: <raw-boolean>)
+       (objc-class.as-raw-class,
+        selector.as-raw-selector,
+        primitive-unwrap-c-pointer(implementation),
+        primitive-string-as-raw(types))
+     end)
+end;

@@ -137,6 +137,33 @@ define test objc-create-subclass-test ()
               objc/instance-class-name(objc-instance), "DylanTestClass");
 end test objc-create-subclass-test;
 
+define function dylan-adder
+    (target, selector, a :: <integer>)
+ => (r :: <integer>)
+  a + 1
+end;
+
+define c-callable-wrapper c-adder of dylan-adder
+  parameter target :: <ns/object>;
+  parameter selector :: <objc/selector>;
+  parameter a :: <C-int>;
+  result r :: <C-int>;
+end;
+
+define objc-selector sel/test-adder
+  parameter target :: <ns/object>;
+  parameter a :: <C-int>;
+  result r :: <C-int>;
+  selector: "testAdder:";
+end;
+
+define test objc-add-method-test ()
+  assert-true(objc/add-method($DylanTestClass, sel/test-adder,
+                              c-adder, "i@:i"));
+  let i = objc-msgsend($DylanTestClass, sel/alloc);
+  assert-equal(3, objc-msgsend(i, sel/test-adder, 2));
+end;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -152,4 +179,5 @@ define suite objc-test-suite ()
   test objc-associated-objects-test;
   test objc-print-object-test;
   test objc-create-subclass-test;
+  test objc-add-method-test;
 end suite;
