@@ -4,6 +4,7 @@ author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
 define constant $shadow-class-registry :: <table> = make(<table>);
+define constant $class-registry :: <table> = make(<table>);
 
 define C-subtype <objc/class> (<C-statically-typed-pointer>)
 end;
@@ -28,12 +29,19 @@ define function objc/register-shadow-class
     (objc-class :: <objc/class>, shadow-class :: subclass(<objc/instance>))
  => ()
   $shadow-class-registry[objc-class.pointer-address] := shadow-class;
+  $class-registry[shadow-class] := objc-class;
 end;
 
 define function objc/shadow-class-for
     (raw-objc-class :: <machine-word>)
  => (shadow-class :: subclass(<objc/instance>))
   $shadow-class-registry[raw-objc-class]
+end;
+
+define function objc/class-for-shadow
+    (shadow-class :: subclass(<objc/instance>))
+ => (objc-class :: <objc/class>)
+  $class-registry[shadow-class]
 end;
 
 define function objc/get-class (name :: <string>)
@@ -121,4 +129,33 @@ define function objc/get-instance-method
   else
     #f
   end if
+end;
+
+define function objc/allocate-class-pair
+    (super-class :: subclass(<objc/instance>),
+     class-name :: <string>)
+ => (objc-class :: <objc/class>)
+  let super-class = objc/class-for-shadow(super-class);
+  let raw-class
+    = primitive-wrap-machine-word
+        (%call-c-function ("objc_allocateClassPair")
+             (super-class :: <raw-machine-word>,
+              class-name :: <raw-byte-string>,
+              extra-bytes :: <raw-machine-word>)
+          => (objc-class :: <raw-machine-word>)
+           (super-class.as-raw-class,
+            primitive-string-as-raw(class-name),
+            integer-as-raw(0))
+         end);
+  make(<objc/class>, address: raw-class)
+end;
+
+define function objc/register-class-pair
+    (objc-class :: <objc/class>)
+ => ()
+  %call-c-function ("objc_registerClassPair")
+      (objc-class :: <raw-machine-word>)
+   => (nothing :: <raw-c-void>)
+    (objc-class.as-raw-class)
+  end;
 end;

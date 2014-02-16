@@ -30,6 +30,9 @@ define module objective-c
   export objc/register-shadow-class,
          objc/shadow-class-for;
 
+  export objc/allocate-class-pair,
+         objc/register-class-pair;
+
   export <objc/selector>,
          objc/register-selector,
          objc/selector-name;
@@ -54,6 +57,7 @@ define module objective-c
          $OBJC-ASSOCIATION-COPY;
 
   export \objc-shadow-class-definer,
+         \objc-class-definer,
          \objc-protocol-definer,
          \objc-msgsend;
 

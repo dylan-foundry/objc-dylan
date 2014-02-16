@@ -126,6 +126,17 @@ define test objc-print-object-test ()
                print-to-string($NSObject));
 end test objc-print-object-test;
 
+define objc-class <test-class> (<ns/object>) => DylanTestClass
+end;
+
+define test objc-create-subclass-test ()
+  let new-subclass = objc/get-class("DylanTestClass");
+  assert-equal($DylanTestClass, new-subclass);
+  let objc-instance = objc-msgsend(new-subclass, sel/alloc);
+  check-equal("Newly created subclass has the correct class name",
+              objc/instance-class-name(objc-instance), "DylanTestClass");
+end test objc-create-subclass-test;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -140,4 +151,5 @@ define suite objc-test-suite ()
   test objc-instance-class-name-test;
   test objc-associated-objects-test;
   test objc-print-object-test;
+  test objc-create-subclass-test;
 end suite;

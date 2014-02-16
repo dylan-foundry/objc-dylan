@@ -27,6 +27,18 @@ define macro objc-shadow-class-definer
     { ?:expression, ... } => { ?expression, ... }
 end;
 
+define macro objc-class-definer
+  { define objc-class ?:name (?super:name) => ?objc-name:name
+    end }
+    => {
+         begin
+          let new-class = objc/allocate-class-pair(?super, ?"objc-name");
+          objc/register-class-pair(new-class);
+         end;
+         define objc-shadow-class ?name (?super) => ?objc-name;
+  }
+end;
+
 define macro objc-msgsend
   { objc-msgsend(?target:expression, ?selector:name, ?args:*) }
     => { "%send-" ## ?selector (?target, ?args) }
