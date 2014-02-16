@@ -26,21 +26,21 @@ A quick example usage is:
 
 .. code-block:: dylan
 
-   define objc-selector sel/alloc
+   define objc-selector @alloc
      parameter target :: <objc/class>;
      result objc-instance :: <objc/instance-address>;
      selector: "alloc";
    end;
 
-   define objc-selector sel/retain-count
+   define objc-selector @retain-count
      parameter target :: <objc/instance>;
      result retain-count :: <C-int>;
      selector: "retainCount";
    end;
 
    begin
-     let inst = objc-msgsend($NSObject, sel/alloc);
-     let count = objc-msgsend(inst, sel/retain-count);
+     let inst = objc-msgsend($NSObject, @alloc);
+     let count = objc-msgsend(inst, @retain-count);
    end;
 
 This demonstrates the definition of 2 standard selectors and how to
@@ -128,9 +128,9 @@ The GNU Objective C run-time is also not supported.
 Naming Scheme
 =============
 
-Selectors are commonly named with a prefix of ``sel/`` such as
-``sel/alloc``, ``sel/description``. Colons within a selector name
-can be converted to ``/`` as in ``sel/perform-selector/with-object``.
+Selectors are commonly named with a prefix of ``@`` such as
+``@alloc``, ``@description``. Colons within a selector name
+can be converted to ``/`` as in ``@perform-selector/with-object``.
 That example also demonstrates the conversion of the changes in
 case to the more Dylan-like use of hyphenated names.
 
@@ -170,13 +170,13 @@ Macros
 
      .. code-block:: dylan
 
-        let inst = objc-msgsend($NSObject, sel/alloc);
+        let inst = objc-msgsend($NSObject, @alloc);
 
      expands to:
 
      .. code-block:: dylan
 
-        let inst = %send-sel/alloc($NSObject);
+        let inst = %send-@alloc($NSObject);
 
 .. macro:: objc-protocol-definer
 
@@ -319,7 +319,7 @@ Macros
 
      .. code-block:: dylan
 
-       define objc-selector sel/alloc
+       define objc-selector @alloc
          parameter objc-class :: <objc/class>;
          result instance :: <objc/instance-address>;
          c-name: "alloc";
@@ -329,12 +329,12 @@ Macros
 
      .. code-block:: dylan
 
-       define constant sel/alloc = objc/register-selector("alloc");
-       define function %send-sel/alloc (target)
+       define constant @alloc = objc/register-selector("alloc");
+       define function %send-@alloc (target)
          let c-target = %as-c-representation(<objc/class>,
                                              target);
          let c-selector = %as-c-representation(<objc/selector,
-                                               sel/alloc);
+                                               @alloc);
          let c-result = %objc-msgsend(c-target, c-selector);
          %as-dylan-representation(<objc/instance-address>, c-result)
        end;
@@ -344,7 +344,7 @@ Macros
    :example:
      .. code-block:: dylan
 
-        define objc-selector sel/alloc
+        define objc-selector @alloc
           parameter target :: <objc/class>;
           result objc-instance :: <objc/instance-address>;
           selector: "alloc";

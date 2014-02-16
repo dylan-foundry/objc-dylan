@@ -61,46 +61,46 @@ define test objc-get-instance-method-test ()
               objc/get-instance-method(ns-object, bad-method-SEL));
 end test objc-get-instance-method-test;
 
-define objc-selector sel/alloc
+define objc-selector @alloc
   parameter target :: <objc/class>;
   result objc-instance :: <objc/instance-address>;
   selector: "alloc";
 end;
 
-define objc-selector sel/retain-count
+define objc-selector @retain-count
   parameter target :: <objc/instance>;
   result retain-count :: <C-int>;
   selector: "retainCount";
 end;
 
 define test objc-alloc-test ()
-  let objc-instance = objc-msgsend($NSObject, sel/alloc);
+  let objc-instance = objc-msgsend($NSObject, @alloc);
   check-true("Newly created object is an instance of <ns/object>",
              instance?(objc-instance, <ns/object>));
 end test objc-alloc-test;
 
 define test objc-msgsend-test ()
-  let objc-instance = objc-msgsend($NSObject, sel/alloc);
-  let rc = objc-msgsend(objc-instance, sel/retain-count);
+  let objc-instance = objc-msgsend($NSObject, @alloc);
+  let rc = objc-msgsend(objc-instance, @retain-count);
   check-equal("Newly created object has a retain count of 1",
               rc, 1);
 end test objc-msgsend-test;
 
 define test objc-instance-class-test ()
-  let objc-instance = objc-msgsend($NSObject, sel/alloc);
+  let objc-instance = objc-msgsend($NSObject, @alloc);
   let class-name = objc/class-name(objc/instance-class(objc-instance));
   check-equal("Newly created object has the correct class",
               class-name, "NSObject");
 end test objc-instance-class-test;
 
 define test objc-instance-class-name-test ()
-  let objc-instance = objc-msgsend($NSObject, sel/alloc);
+  let objc-instance = objc-msgsend($NSObject, @alloc);
   check-equal("Newly created object has the correct class name",
               objc/instance-class-name(objc-instance), "NSObject");
 end test objc-instance-class-name-test;
 
 define test objc-associated-objects-test ()
-  let objc-instance = objc-msgsend($NSObject, sel/alloc);
+  let objc-instance = objc-msgsend($NSObject, @alloc);
   check-equal("Newly created object hasn't got associated object",
               objc/associated-object(objc-instance, "foobar"), $nil);
   objc/set-associated-object(objc-instance, "foobar", objc-instance, $OBJC-ASSOCIATION-ASSIGN);
@@ -121,7 +121,7 @@ define test objc-print-object-test ()
           stream-contents(stream)
         end;
   assert-equal("{<objc/selector> alloc}",
-               print-to-string(sel/alloc));
+               print-to-string(@alloc));
   assert-equal("{<objc/class> NSObject}",
                print-to-string($NSObject));
 end test objc-print-object-test;
@@ -132,7 +132,7 @@ end;
 define test objc-create-subclass-test ()
   let new-subclass = objc/get-class("DylanTestClass");
   assert-equal($DylanTestClass, new-subclass);
-  let objc-instance = objc-msgsend(new-subclass, sel/alloc);
+  let objc-instance = objc-msgsend(new-subclass, @alloc);
   check-equal("Newly created subclass has the correct class name",
               objc/instance-class-name(objc-instance), "DylanTestClass");
 end test objc-create-subclass-test;
@@ -150,7 +150,7 @@ define c-callable-wrapper c-adder of dylan-adder
   result r :: <C-int>;
 end;
 
-define objc-selector sel/test-adder
+define objc-selector @test-adder
   parameter target :: <ns/object>;
   parameter a :: <C-int>;
   result r :: <C-int>;
@@ -158,10 +158,10 @@ define objc-selector sel/test-adder
 end;
 
 define test objc-add-method-test ()
-  assert-true(objc/add-method($DylanTestClass, sel/test-adder,
+  assert-true(objc/add-method($DylanTestClass, @test-adder,
                               c-adder, "i@:i"));
-  let i = objc-msgsend($DylanTestClass, sel/alloc);
-  assert-equal(3, objc-msgsend(i, sel/test-adder, 2));
+  let i = objc-msgsend($DylanTestClass, @alloc);
+  assert-equal(3, objc-msgsend(i, @test-adder, 2));
 end;
 
 define suite objc-test-suite ()
