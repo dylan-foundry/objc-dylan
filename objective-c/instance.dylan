@@ -4,7 +4,6 @@ author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
 define C-subtype <objc/instance> (<C-statically-typed-pointer>)
-  constant each-subclass slot instance-objc-class :: <objc/class>;
 end;
 
 define C-mapped-subtype <objc/instance-address> (<C-void*>)

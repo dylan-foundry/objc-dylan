@@ -14,7 +14,6 @@ define macro objc-shadow-class-definer
   { define objc-shadow-class ?:name (?supers) => ?objc-name:name }
     => { define constant "$" ## ?objc-name = objc/get-class(?"objc-name");
          define C-subtype ?name (?supers)
-           inherited slot instance-objc-class, init-value: "$" ## ?objc-name;
          end;
          objc/register-shadow-class("$" ## ?objc-name, ?name);
          define method as (class == ?name, objc-instance)
