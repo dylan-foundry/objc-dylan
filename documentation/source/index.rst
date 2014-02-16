@@ -19,7 +19,7 @@ Quick Usage
 
 Objective C selectors (method definitions can be described using the
 :macro:`objc-selector-definer` macro.  Messages can be sent to
-Objective C classes and instances using the :macro:`objc-msgsend`
+Objective C classes and instances using the :macro:`send`
 macro.
 
 A quick example usage is:
@@ -39,8 +39,8 @@ A quick example usage is:
    end;
 
    begin
-     let inst = objc-msgsend($NSObject, @alloc);
-     let count = objc-msgsend(inst, @retain-count);
+     let inst = send($NSObject, @alloc);
+     let count = send(inst, @retain-count);
    end;
 
 This demonstrates the definition of 2 standard selectors and how to
@@ -149,14 +149,14 @@ The OBJECTIVE-C module
 Macros
 ------
 
-.. macro:: objc-msgsend
+.. macro:: send
 
    Sends an Objective C message to a target.
 
    :macrocall:
      .. code-block:: dylan
 
-        objc-msgsend(*target*, *selector*, *args*)
+        send(*target*, *selector*, *args*)
 
    :description:
 
@@ -170,7 +170,7 @@ Macros
 
      .. code-block:: dylan
 
-        let inst = objc-msgsend($NSObject, @alloc);
+        let inst = send($NSObject, @alloc);
 
      expands to:
 

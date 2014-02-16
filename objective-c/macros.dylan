@@ -39,7 +39,7 @@ define macro objc-class-definer
   }
 end;
 
-define macro objc-msgsend
-  { objc-msgsend(?target:expression, ?selector:name, ?args:*) }
+define macro send
+  { send(?target:expression, ?selector:name, ?args:*) }
     => { "%send-" ## ?selector (?target, ?args) }
 end;

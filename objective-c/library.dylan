@@ -60,7 +60,7 @@ define module objective-c
   export \objc-shadow-class-definer,
          \objc-class-definer,
          \objc-protocol-definer,
-         \objc-msgsend;
+         \send;
 
   export <ns/object>,
          <<ns/object>>,
