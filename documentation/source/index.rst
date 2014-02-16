@@ -303,15 +303,17 @@ Macros
      value for the C result, and the C function is expected to have a
      return type of *void*.
 
-     Each *function-option* is a keyword–value pair. The
-     *generic-function-method:* option may be either ``#t`` or ``#f``,
+     Each *function-option* is a keyword–value pair.
+
+     The *generic-function-method:* option may be either ``#t`` or ``#f``,
      indicating whether to add a method to the generic function name or
      to bind a bare constant method directly to name. The default value
-     for *generic-function-method:* is ``#f``. The option *C-modifiers:*
-     can be used to specify platform dependent modifiers for the C
-     function being called. For example, on Windows, use *C-modifiers:*
-     ``"__stdcall"`` if the C function to be called is defined to be a
-     ``__stdcall`` function.
+     for *generic-function-method:* is ``#f``.
+
+     The option *C-modifiers:* can be used to specify alternate versions
+     of ``objc_msgSend`` to use.  For example, if a selector needs to be
+     sent using ``objc_msgSend_fpret``, then you would use ``C-modifiers:
+     "_fpret"``.
 
      In effect, a ``define objc-selector`` such as:
 
@@ -331,7 +333,9 @@ Macros
        define function %send-sel/alloc (target)
          let c-target = %as-c-representation(<objc/class>,
                                              target);
-         let c-result = %objc-msgsend(c-target, sel/alloc);
+         let c-selector = %as-c-representation(<objc/selector,
+                                               sel/alloc);
+         let c-result = %objc-msgsend(c-target, c-selector);
          %as-dylan-representation(<objc/instance-address>, c-result)
        end;
 
