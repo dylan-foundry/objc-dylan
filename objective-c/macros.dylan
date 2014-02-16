@@ -13,7 +13,7 @@ end;
 define macro objc-shadow-class-definer
   { define objc-shadow-class ?:name (?supers) => ?objc-name:name }
     => { define constant "$" ## ?objc-name = objc/get-class(?"objc-name");
-         define open C-subtype ?name (?supers)
+         define dynamic C-subtype ?name (?supers)
          end;
          objc/register-shadow-class("$" ## ?objc-name, ?name);
          define method as (class == ?name, objc-instance)
