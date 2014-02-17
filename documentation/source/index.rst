@@ -28,7 +28,7 @@ A quick example usage is:
 
    define objc-selector @alloc
      parameter target :: <objc/class>;
-     result objc-instance :: <objc/instance-address>;
+     result objc-instance :: <objc/instance>;
      selector: "alloc";
    end;
 
@@ -321,7 +321,7 @@ Macros
 
        define objc-selector @alloc
          parameter objc-class :: <objc/class>;
-         result instance :: <objc/instance-address>;
+         result instance :: <objc/instance>;
          c-name: "alloc";
        end;
 
@@ -336,7 +336,7 @@ Macros
          let c-selector = %as-c-representation(<objc/selector,
                                                @alloc);
          let c-result = %objc-msgsend(c-target, c-selector);
-         %as-dylan-representation(<objc/instance-address>, c-result)
+         %as-dylan-representation(<objc/instance>, c-result)
        end;
 
      with the declared type.
@@ -346,7 +346,7 @@ Macros
 
         define objc-selector @alloc
           parameter target :: <objc/class>;
-          result objc-instance :: <objc/instance-address>;
+          result objc-instance :: <objc/instance>;
           selector: "alloc";
         end;
 
@@ -472,21 +472,12 @@ Instances
      Direct instances of this class are not used. Instead, use instances of
      subclasses created with :macro:`objc-shadow-class-definer`.
 
+     When this class is used as the result type for a selector, the value
+     will be mapped back into the correct instance of a subclass of
+     :class:`<objc/instance>`. This requires that the actual class has been
+     correctly set up as a shadow class or an error will be signaled.
+
 .. constant:: $nil
-
-.. class:: <objc/instance-address>
-
-   Used in :macro:`objc-selector-definer` definitions.
-
-   :superclasses: <c-void*>
-
-   :description:
-
-     This class is used as a marker in :macro:`objc-selector-definer`
-     definitions to indicate that the value should be mapped back into the
-     correct instance of a subclass of :class:`<objc/instance>`. This
-     requires that the actual class has been set up correctly as a shadow
-     class.
 
 .. function:: objc/instance-class
 

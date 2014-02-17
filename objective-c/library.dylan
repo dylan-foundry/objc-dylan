@@ -42,7 +42,6 @@ define module objective-c
          objc/method-name;
 
   export <objc/instance>,
-         <objc/instance-address>,
          objc/instance-class,
          objc/instance-class-name,
          objc/raw-instance-class,

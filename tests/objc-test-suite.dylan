@@ -63,7 +63,7 @@ end test objc-get-instance-method-test;
 
 define objc-selector @alloc
   parameter target :: <objc/class>;
-  result objc-instance :: <objc/instance-address>;
+  result objc-instance :: <objc/instance>;
   selector: "alloc";
 end;
 
@@ -145,7 +145,7 @@ define function dylan-adder
 end;
 
 define c-callable-wrapper c-adder of dylan-adder
-  parameter target :: <objc/instance-address>;
+  parameter target :: <objc/instance>;
   parameter selector :: <objc/selector>;
   parameter a :: <C-int>;
   result r :: <C-int>;

@@ -3,13 +3,10 @@ synopsis: Some basics for talking to the Objective C 2 runtime.
 author: Bruce Mitchener, Jr.
 copyright: See LICENSE file in this distribution.
 
-define C-subtype <objc/instance> (<C-statically-typed-pointer>)
-end;
-
-define C-mapped-subtype <objc/instance-address> (<C-void*>)
+define C-mapped-subtype <objc/instance> (<C-statically-typed-pointer>)
   import-map <objc/instance>,
     import-function:
-      method (address :: <objc/instance-address>) => (objc-instance :: <objc/instance>)
+      method (address :: <objc/instance>) => (objc-instance :: <objc/instance>)
         objc/make-instance(address.pointer-address)
       end;
 end;
