@@ -140,11 +140,12 @@ end test objc-create-subclass-test;
 define function dylan-adder
     (target, selector, a :: <integer>)
  => (r :: <integer>)
+  assert-true(instance?(target, <test-class>));
   a + 1
 end;
 
 define c-callable-wrapper c-adder of dylan-adder
-  parameter target :: <ns/object>;
+  parameter target :: <objc/instance-address>;
   parameter selector :: <objc/selector>;
   parameter a :: <C-int>;
   result r :: <C-int>;
