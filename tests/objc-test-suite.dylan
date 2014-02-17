@@ -124,6 +124,9 @@ define test objc-print-object-test ()
                print-to-string(@alloc));
   assert-equal("{<objc/class> NSObject}",
                print-to-string($NSObject));
+  let <<ns/object>> = objc/get-protocol("NSObject");
+  assert-equal("{<objc/protocol> NSObject}",
+               print-to-string(<<ns/object>>));
 end test objc-print-object-test;
 
 define objc-class <test-class> (<ns/object>) => DylanTestClass
@@ -165,6 +168,19 @@ define test objc-add-method-test ()
   assert-equal(3, send(i, @test-adder, 2));
 end;
 
+define test objc-protocol-lookup-test ()
+  let <<ns/object>> = objc/get-protocol("NSObject");
+  assert-equal("NSObject", objc/protocol-name(<<ns/object>>));
+  assert-false(objc/get-protocol("NoSuchProtocolExists"));
+end test objc-protocol-lookup-test;
+
+define test objc-protocol-equal-test ()
+  assert-equal(objc/get-protocol("NSObject"),
+               objc/get-protocol("NSObject"));
+  assert-not-equal(objc/get-protocol("NSObject"),
+                   objc/get-protocol("NoSuchProtocolExists"));
+end test objc-protocol-equal-test;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -181,4 +197,6 @@ define suite objc-test-suite ()
   test objc-print-object-test;
   test objc-create-subclass-test;
   test objc-add-method-test;
+  test objc-protocol-lookup-test;
+  test objc-protocol-equal-test;
 end suite;

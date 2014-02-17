@@ -6,6 +6,7 @@ files: library
        method
        class
        instance
+       protocol
        macros
        base-definitions
 c-libraries: -lobjc

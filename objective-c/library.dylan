@@ -56,6 +56,10 @@ define module objective-c
          $OBJC-ASSOCIATION-RETURN,
          $OBJC-ASSOCIATION-COPY;
 
+  export <objc/protocol>,
+         objc/get-protocol,
+         objc/protocol-name;
+
   export \objc-shadow-class-definer,
          \objc-class-definer,
          \objc-protocol-definer,
