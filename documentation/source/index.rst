@@ -130,7 +130,7 @@ Naming Scheme
 
 Selectors are commonly named with a prefix of ``@`` such as
 ``@alloc``, ``@description``. Colons within a selector name
-can be converted to ``/`` as in ``@perform-selector/with-object``.
+can be converted to ``/`` as in ``@perform-selector/with-object/``.
 That example also demonstrates the conversion of the changes in
 case to the more Dylan-like use of hyphenated names.
 
