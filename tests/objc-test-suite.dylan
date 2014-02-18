@@ -181,6 +181,11 @@ define test objc-protocol-equal-test ()
                    objc/get-protocol("NoSuchProtocolExists"));
 end test objc-protocol-equal-test;
 
+define test objc-conforms-to-protocol-test ()
+  assert-true(objc/conforms-to-protocol?(objc/get-class("NSObject"),
+                                         objc/get-protocol("NSObject")));
+end test objc-conforms-to-protocol-test;
+
 define suite objc-test-suite ()
   test objc-class-test;
   test objc-class-instance-size-test;
@@ -199,4 +204,5 @@ define suite objc-test-suite ()
   test objc-add-method-test;
   test objc-protocol-lookup-test;
   test objc-protocol-equal-test;
+  test objc-conforms-to-protocol-test;
 end suite;

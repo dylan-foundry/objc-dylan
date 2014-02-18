@@ -58,7 +58,8 @@ define module objective-c
 
   export <objc/protocol>,
          objc/get-protocol,
-         objc/protocol-name;
+         objc/protocol-name,
+         objc/conforms-to-protocol?;
 
   export \objc-shadow-class-definer,
          \objc-class-definer,

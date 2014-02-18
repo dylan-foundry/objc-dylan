@@ -53,3 +53,17 @@ define sealed method \=
       (sel1.as-raw-protocol, sel2.as-raw-protocol)
     end)
 end;
+
+define method objc/conforms-to-protocol?
+    (objc-protocol:: <objc/protocol>,
+     protocol :: <objc/protocol>)
+ => (conforms? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("protocol_conformsToProtocol")
+         (objc-protocol :: <raw-machine-word>,
+          protocol :: <raw-machine-word>)
+      => (conforms? :: <raw-boolean>)
+       (objc-protocol.as-raw-protocol,
+        protocol.as-raw-protocol)
+     end)
+end;

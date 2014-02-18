@@ -179,3 +179,17 @@ define function objc/add-method
         primitive-string-as-raw(types))
      end)
 end;
+
+define method objc/conforms-to-protocol?
+    (objc-class :: <objc/class>,
+     protocol :: <objc/protocol>)
+ => (conforms? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("class_conformsToProtocol")
+         (objc-class :: <raw-machine-word>,
+          protocol :: <raw-machine-word>)
+      => (conforms? :: <raw-boolean>)
+       (objc-class.as-raw-class,
+        protocol.as-raw-protocol)
+     end)
+end;

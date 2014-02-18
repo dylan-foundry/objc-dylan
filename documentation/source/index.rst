@@ -591,6 +591,39 @@ Associated Objects
    :parameter value: An instance of :class:`<objc/instance>`.
    :parameter association-policy: An instance of :drm:`<integer>`.
 
+Protocols
+---------
+
+.. class:: <objc/protocol>
+
+   Represents an Objective C protocol.
+
+   :superclasses: <C-statically-typed-pointer>
+
+.. function:: objc/get-protocol
+
+   Looks up an Objective C protocol, given its name.
+
+   :signature: objc/get-protocol (name) => (objc-protocol)
+
+   :parameter name: An instance of :drm:`<string>`.
+   :value objc-protocol: An instance of ``false-or(<objc/protocol>)``.
+
+.. function:: objc/protocol-name
+
+   :signature: objc/protocol-name (objc-protocol) => (objc-protocol-name)
+
+   :parameter objc-protocol: An instance of :class:`<objc/protocol>`.
+   :value objc-protocol-name: An instance of :drm:`<string>`.
+
+.. generic-function:: objc/conforms-to-protocol?
+
+   :signature: objc/conforms-to-protocol? (object) => (conforms?)
+
+   :parameter object: An instance of :class:`<objc/class>` or :class:`<objc/protocol>`.
+   :value conforms?: An instance of :drm:`<boolean>`.
+
+
 Core Foundation Bindings
 ------------------------
 
