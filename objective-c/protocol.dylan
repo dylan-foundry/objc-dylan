@@ -67,3 +67,17 @@ define method objc/conforms-to-protocol?
         protocol.as-raw-protocol)
      end)
 end;
+
+define method objc/add-protocol
+    (objc-protocol :: <objc/protocol>,
+     protocol :: <objc/protocol>)
+ => (added? :: <boolean>)
+  primitive-raw-as-boolean
+    (%call-c-function ("protocol_addProtocol")
+         (objc-protocol :: <raw-machine-word>,
+          protocol :: <raw-machine-word>)
+      => (added? :: <raw-boolean>)
+       (objc-protocol.as-raw-protocol,
+        protocol.as-raw-protocol)
+     end)
+end;
