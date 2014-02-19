@@ -55,7 +55,7 @@ define sealed method \=
 end;
 
 define method objc/conforms-to-protocol?
-    (objc-protocol:: <objc/protocol>,
+    (objc-protocol :: <objc/protocol>,
      protocol :: <objc/protocol>)
  => (conforms? :: <boolean>)
   primitive-raw-as-boolean
