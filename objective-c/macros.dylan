@@ -29,14 +29,42 @@ end;
 
 define macro objc-class-definer
   { define objc-class ?:name (?super:name) => ?objc-name:name
+      ?methods:*
+    end }
+    => {
+         define objc-class-aux ?name (?super) => ?objc-name
+          (?methods) (?methods)
+         end
+  }
+end;
+
+define macro objc-class-aux-definer
+  { define objc-class-aux ?:name (?super:name) => ?objc-name:name
+      (?c-callable-wrappers) (?add-methods)
     end }
     => {
          begin
-          let new-class = objc/allocate-class-pair(?super, ?"objc-name");
-          objc/register-class-pair(new-class);
+           let new-class = objc/allocate-class-pair(?super, ?"objc-name");
+           objc/register-class-pair(new-class);
          end;
          define objc-shadow-class ?name (?super) => ?objc-name;
+         let objc-class = "$" ## ?objc-name;
+         ?add-methods
   }
+
+  c-callable-wrappers:
+    { } => { }
+    { ?other:* } => { }
+
+  add-methods:
+    { } => { }
+    { ?add-method:*; ... } => { ?add-method; ... }
+
+  add-method:
+    { bind ?selector:name => ?dylan-method:name (?encoding:expression) }
+      => {
+      objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding)
+    }
 end;
 
 define macro send
