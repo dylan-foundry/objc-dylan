@@ -110,7 +110,6 @@ We do not yet support these features of the Objective C run-time:
 * Doing much of anything with :class:`<objc/method>`.
 * Protocol introspection or representing Objective C protocols on
   the Dylan side.
-* Creating new classes or adding methods to classes.
 * Properties of classes or instances.
 * Access to instance variables.
 
@@ -177,6 +176,115 @@ Macros
      .. code-block:: dylan
 
         let inst = %send-@alloc($NSObject);
+
+.. macro:: objc-class-definer
+
+   Defines a new Objective C class, creates the corresponding shadow class,
+   and allows binding method implementations to the class.
+
+   :macrocall:
+     .. code-block:: dylan
+
+        define objc-class *class-name* (*superclass*) => *objective-c-name*
+          bind *selector* to *c-callable-wrapper* (*type-encoding*);
+          ...
+        end;
+
+   :parameter class-name: the name of the Dylan shadow class.
+   :parameter superclass: the names of the Dylan shadow superclass.
+   :parameter objective-c-name: the name of the Objective C class being created.
+   :parameter selector: The selector to be bound to a method implementation.
+   :parameter c-callable-wrapper: The c-callable-wrapper around a Dylan function to be used as a method implementation.
+   :parameter type-encoding: The type encoding string.
+
+   :description:
+
+     Defines a new Objective C class and the corresponding Dylan shadow class.
+     The new class can only have a single super-class (named by *superclass*).
+     Protocol support will be added in the future.
+
+     Methods may be bound to the new Objective C class using the bind syntax:
+
+     .. code-block:: dylan
+
+        bind *selector* to *c-callable-wrapper* (*type-encoding*);
+
+     At this time, both the selector and the c-callable wrapper must already
+     have been defined separately. We recognize that this is verbose and
+     are looking at alternatives.
+
+     The type encoding is a string with the result type first and then
+     each of the argument types. The types correspond to the Dylan C-FFI
+     types as follows:
+
+     +----------------------+-----+
+     | Type                 | Enc |
+     +----------------------+-----+
+     | <objc/instance>      | '@' |
+     +----------------------+-----+
+     | <objc/class>         | '#' |
+     +----------------------+-----+
+     | <objc/selector>      | ':' |
+     +----------------------+-----+
+     | <C-character>        | 'c' |
+     +----------------------+-----+
+     | <C-unsigned-char>    | 'C' |
+     +----------------------+-----+
+     | <C-short>            | 's' |
+     +----------------------+-----+
+     | <C-unsigned-short>   | 'S' |
+     +----------------------+-----+
+     | <C-int>              | 'i' |
+     +----------------------+-----+
+     | <C-unsigned-int>     | 'I' |
+     +----------------------+-----+
+     | <C-long>             | 'l' |
+     +----------------------+-----+
+     | <C-unsigned-long>    | 'L' |
+     +----------------------+-----+
+     | <C-float>            | 'f' |
+     +----------------------+-----+
+     | <C-double>           | 'd' |
+     +----------------------+-----+
+     | <C-boolean>          | 'B' |
+     +----------------------+-----+
+     | <C-void>             | 'v' |
+     +----------------------+-----+
+     | poiniter to          | '^' |
+     +----------------------+-----+
+     | <C-string>           | '*' |
+     +----------------------+-----+
+
+     Note that the second and third characters should always be ``@:``.
+
+   :example:
+
+     .. code-block:: dylan
+
+        define objc-selector @adder
+          parameter target :: <ns/object>;
+          parameter a :: <C-int>;
+          result r :: <C-int>;
+          selector: "adder:";
+        end;
+
+        define function adder
+            (target, selector, a :: <integer>)
+         => (r :: <integer>)
+          assert-true(instance?(target, <test-class>));
+          a + 1
+        end;
+
+        define c-callable-wrapper adder-c-wrapper of adder
+          parameter target :: <objc/instance>;
+          parameter selector :: <objc/selector>;
+          parameter a :: <C-int>;
+          result r :: <C-int>
+        end;
+
+        define objc-class <test-class> (<ns/object>) => DylanTestClass
+          bind @adder => adder-c-wrapper ("i@:i");
+        end;
 
 .. macro:: objc-protocol-definer
 
@@ -358,9 +466,9 @@ Macros
         define objc-shadow-class *class-name* (*superclasses*)
           => *objective-c-class*;
 
-   :parameter class-name: The name of the Dylan shadow class.
-   :parameter superclasses: The names of the Dylan shadow superclasses and protocols.
-   :parameter objective-c-class: The name of the Objective C class being shadowed.
+   :parameter class-name: the name of the dylan shadow class.
+   :parameter superclasses: the names of the dylan shadow superclasses and protocols.
+   :parameter objective-c-class: the name of the objective c class being shadowed.
 
    :description:
 
