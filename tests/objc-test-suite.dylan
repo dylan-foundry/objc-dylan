@@ -129,29 +129,29 @@ define test objc-print-object-test ()
                print-to-string(<<ns/object>>));
 end test objc-print-object-test;
 
-define function dylan-adder
+define objc-selector @adder
+  parameter target :: <ns/object>;
+  parameter a :: <C-int>;
+  result r :: <C-int>;
+  selector: "adder:";
+end;
+
+define function adder
     (target, selector, a :: <integer>)
  => (r :: <integer>)
   assert-true(instance?(target, <test-class>));
   a + 1
 end;
 
-define c-callable-wrapper dylan-adder-c-wrapper of dylan-adder
+define c-callable-wrapper adder-c-wrapper of adder
   parameter target :: <objc/instance>;
   parameter selector :: <objc/selector>;
   parameter a :: <C-int>;
-  result r :: <C-int>;
-end;
-
-define objc-selector @adder
-  parameter target :: <ns/object>;
-  parameter a :: <C-int>;
-  result r :: <C-int>;
-  selector: "testAdder:";
+  result r :: <C-int>
 end;
 
 define objc-class <test-class> (<ns/object>) => DylanTestClass
-  bind @adder => dylan-adder ("i@:i");
+  bind @adder => adder ("i@:i");
 end;
 
 define test objc-create-subclass-test ()
