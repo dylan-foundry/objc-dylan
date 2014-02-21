@@ -61,9 +61,9 @@ define macro objc-class-aux-definer
     { ?add-method:*; ... } => { ?add-method; ... }
 
   add-method:
-    { bind ?selector:name => ?dylan-method:name (?encoding:expression) }
+    { bind ?selector:name => ?dylan-method-wrapper:name (?encoding:expression) }
       => {
-      objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding)
+      objc/add-method(objc-class, ?selector, ?dylan-method-wrapper, ?encoding)
     }
 end;
 

@@ -151,7 +151,7 @@ define c-callable-wrapper adder-c-wrapper of adder
 end;
 
 define objc-class <test-class> (<ns/object>) => DylanTestClass
-  bind @adder => adder ("i@:i");
+  bind @adder => adder-c-wrapper ("i@:i");
 end;
 
 define test objc-create-subclass-test ()
