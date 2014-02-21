@@ -136,12 +136,12 @@ define function dylan-adder
   a + 1
 end;
 
-define c-callable-wrapper dylan-adder-c-wrapper of dylan-adder
-  parameter target :: <objc/instance>;
-  parameter selector :: <objc/selector>;
-  parameter a :: <C-int>;
-  result r :: <C-int>;
-end;
+// define c-callable-wrapper dylan-adder-c-wrapper of dylan-adder
+//   parameter target :: <objc/instance>;
+//   parameter selector :: <objc/selector>;
+//   parameter a :: <C-int>;
+//   result r :: <C-int>;
+// end;
 
 define objc-selector @adder
   parameter target :: <ns/object>;
@@ -150,8 +150,22 @@ define objc-selector @adder
   selector: "testAdder:";
 end;
 
+define objc-selector @adder-2
+  parameter target :: <ns/object>;
+  parameter a :: <C-int>;
+  result r :: <C-int>;
+  selector: "testAdder:";
+end;
+
 define objc-class <test-class> (<ns/object>) => DylanTestClass
-  bind @adder => dylan-adder ("i@:i");
+  bind @adder => dylan-adder ("i@:i")
+    parameter target :: <ns/object>,
+    parameter a :: <C-int>,
+    result r :: <C-int>;
+  bind @adder-2 => dylan-adder ("i@:i")
+    parameter target :: <ns/object>,
+    parameter a :: <C-int>,
+    result r :: <C-int>;
 end;
 
 define test objc-create-subclass-test ()
@@ -165,6 +179,7 @@ end test objc-create-subclass-test;
 define test objc-add-method-test ()
   let i = send($DylanTestClass, @alloc);
   assert-equal(3, send(i, @adder, 2));
+  assert-equal(3, send(i, @adder-2, 2));
 end;
 
 define test objc-protocol-lookup-test ()
