@@ -27,44 +27,31 @@ define macro objc-shadow-class-definer
     { ?:expression, ... } => { ?expression, ... }
 end;
 
-define macro objc-class-definer
+define traced macro objc-class-definer
   { define objc-class ?:name (?super:name) => ?objc-name:name
       ?methods:*
     end }
-    => {
-         define objc-class-aux ?name (?super) => ?objc-name
-          (?methods) (?methods)
-         end
-  }
-end;
-
-define macro objc-class-aux-definer
-  { define objc-class-aux ?:name (?super:name) => ?objc-name:name
-      (?c-callable-wrappers) (?add-methods)
-    end }
-    => {
-         begin
+    => { begin
            let new-class = objc/allocate-class-pair(?super, ?"objc-name");
            objc/register-class-pair(new-class);
          end;
          define objc-shadow-class ?name (?super) => ?objc-name;
          let objc-class = "$" ## ?objc-name;
-         ?add-methods
-  }
+         ?methods }
 
-  c-callable-wrappers:
+  methods:
     { } => { }
-    { ?other:* } => { }
+    { bind ?selector:name => ?dylan-method:name (?encoding:expression) ?method-clauses; ... } 
+      => { objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding); 
+           define c-callable-wrapper ?dylan-method ## "-c-wrapper" of ?dylan-method
+             ?method-clauses
+           end;
+           ... }
 
-  add-methods:
+  method-clauses:
+    { parameter ?:variable, ... } => { parameter ?variable; ... }
+    { result ?:variable, ... } => { result ?variable; ... }
     { } => { }
-    { ?add-method:*; ... } => { ?add-method; ... }
-
-  add-method:
-    { bind ?selector:name => ?dylan-method:name (?encoding:expression) }
-      => {
-      objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding)
-    }
 end;
 
 define macro send
