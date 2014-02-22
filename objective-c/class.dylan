@@ -36,10 +36,24 @@ define function objc/shadow-class-for
     (raw-objc-class :: <machine-word>)
  => (shadow-class :: subclass(<objc/instance>))
   let shadow-class = element($shadow-class-registry, raw-objc-class, default: #f);
-  unless (shadow-class)
-    // XXX: Would prefer that this be format-err / force-err but they don't exist.
-    format-out("WARNING: objc/shadow-class-for: No shadow class for %s\n", objc/class-name(raw-objc-class));
-    force-out();
+  let found
+    = if (shadow-class)
+        #t
+      else
+        format-out("WARNING:  objc/shadow-class-for:  No shadow class for %s.\n", objc/class-name(raw-objc-class));
+        force-out();
+        raw-objc-class := objc/raw-super-class(raw-objc-class);
+        #f
+      end;
+  until (found | ~raw-objc-class)
+    shadow-class := element($shadow-class-registry, raw-objc-class, default: #f);
+    if (shadow-class)
+      format-out("WARNING:  objc/shadow-class-for:  Using %s instead.\n", objc/class-name(raw-objc-class));
+      force-out();
+      found := #t;
+    else
+      raw-objc-class := objc/raw-super-class(raw-objc-class);
+    end;
   end;
   shadow-class | <NSObject>;
 end;
