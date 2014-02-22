@@ -22,6 +22,7 @@ define module objective-c
 
   export <objc/class>,
          objc/get-class,
+         objc/super-class,
          objc/instance-size,
          objc/class-name,
          objc/class-responds-to-selector?,

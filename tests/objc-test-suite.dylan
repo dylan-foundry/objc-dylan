@@ -167,6 +167,11 @@ define test objc-add-method-test ()
   assert-equal(3, send(i, @adder, 2));
 end;
 
+define test objc-super-class-test ()
+  assert-false(objc/super-class($NSObject));
+  assert-equal(objc/super-class($DylanTestClass), $NSObject);
+end;
+
 define test objc-protocol-lookup-test ()
   let <<NSObject>> = objc/get-protocol("NSObject");
   assert-equal("NSObject", objc/protocol-name(<<NSObject>>));
@@ -201,6 +206,7 @@ define suite objc-test-suite ()
   test objc-print-object-test;
   test objc-create-subclass-test;
   test objc-add-method-test;
+  test objc-super-class-test;
   test objc-protocol-lookup-test;
   test objc-protocol-equal-test;
   test objc-conforms-to-protocol-test;

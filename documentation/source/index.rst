@@ -531,6 +531,15 @@ Classes
    :parameter objc-class: An instance of :class:`<objc/class>`.
    :value objc-class-name: An instance of :drm:`<string>`.
 
+.. function:: objc/super-class
+
+   Returns the superclass of an Objective C class.
+
+   :signature: objc/super-class (objc-class) => (objc-super-class?)
+
+   :parameter objc-class: An instance of :class:`<objc/class>`.
+   :value objc-super-class?: An instance of ``false-or(<objc/class>)``.
+
 .. function:: objc/class-responds-to-selector?
 
    Returns whether or not an Objective C class responds to the given selector.

@@ -66,6 +66,32 @@ define function objc/get-class (name :: <string>)
   end if
 end;
 
+define function objc/super-class (objc-class :: <objc/class>)
+ => (objc-class :: false-or(<objc/class>))
+  let raw-objc-class
+    = primitive-wrap-machine-word
+        (%call-c-function ("class_getSuperclass")
+              (objc-class :: <raw-machine-word>)
+           => (objc-class :: <raw-machine-word>)
+            (objc-class.as-raw-class)
+         end);
+  if (raw-objc-class ~= 0)
+    make(<objc/class>, address: raw-objc-class)
+  else
+    #f
+  end if
+end;
+
+define inline function objc/raw-super-class (objc-class :: <machine-word>)
+ => (raw-objc-class :: <machine-word>)
+  primitive-wrap-machine-word
+    (%call-c-function ("class_getSuperclass")
+          (objc-class :: <raw-machine-word>)
+       => (objc-class :: <raw-machine-word>)
+        (primitive-unwrap-machine-word(objc-class))
+     end)
+end;
+
 define method objc/class-name (objc-class :: <objc/class>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
