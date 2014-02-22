@@ -46,7 +46,6 @@ define module objective-c
   export <objc/instance>,
          objc/instance-class,
          objc/instance-class-name,
-         objc/raw-instance-class,
          objc/make-instance,
          objc/associated-object,
          objc/set-associated-object,
