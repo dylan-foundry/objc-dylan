@@ -75,8 +75,8 @@ end;
 
 define test objc-alloc-test ()
   let objc-instance = send($NSObject, @alloc);
-  check-true("Newly created object is an instance of <ns/object>",
-             instance?(objc-instance, <ns/object>));
+  check-true("Newly created object is an instance of <NSObject>",
+             instance?(objc-instance, <NSObject>));
 end test objc-alloc-test;
 
 define test objc-send-test ()
@@ -124,13 +124,13 @@ define test objc-print-object-test ()
                print-to-string(@alloc));
   assert-equal("{<objc/class> NSObject}",
                print-to-string($NSObject));
-  let <<ns/object>> = objc/get-protocol("NSObject");
+  let <<NSObject>> = objc/get-protocol("NSObject");
   assert-equal("{<objc/protocol> NSObject}",
-               print-to-string(<<ns/object>>));
+               print-to-string(<<NSObject>>));
 end test objc-print-object-test;
 
 define objc-selector @adder
-  parameter target :: <ns/object>;
+  parameter target :: <NSObject>;
   parameter a :: <C-int>;
   result r :: <C-int>;
   selector: "adder:";
@@ -150,7 +150,7 @@ define c-callable-wrapper adder-c-wrapper of adder
   result r :: <C-int>
 end;
 
-define objc-class <test-class> (<ns/object>) => DylanTestClass
+define objc-class <test-class> (<NSObject>) => DylanTestClass
   bind @adder => adder-c-wrapper ("i@:i");
 end;
 
@@ -168,8 +168,8 @@ define test objc-add-method-test ()
 end;
 
 define test objc-protocol-lookup-test ()
-  let <<ns/object>> = objc/get-protocol("NSObject");
-  assert-equal("NSObject", objc/protocol-name(<<ns/object>>));
+  let <<NSObject>> = objc/get-protocol("NSObject");
+  assert-equal("NSObject", objc/protocol-name(<<NSObject>>));
   assert-false(objc/get-protocol("NoSuchProtocolExists"));
 end test objc-protocol-lookup-test;
 

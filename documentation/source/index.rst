@@ -133,12 +133,13 @@ can be converted to ``/`` as in ``@perform-selector/with-object/``.
 That example also demonstrates the conversion of the changes in
 case to the more Dylan-like use of hyphenated names.
 
-The "namespace" portion of a class name may be separated from the
-class name with a ``/`` as well for a shadow class:  ``<ns/object>``,
-although the actual Objective C class would be ``$NSObject``.
+Shadow classes are named in typical Dylan fashion with the name
+of the Objective C class wrapped in ``<...>``: ``<NSObject>``,
+``NSApplication``. The actual underlying Objective C class is
+available as a constant: ``$NSObject``, ``$NSApplication``.
 
 Protocols are commonly named with double ``<<`` and ``>>`` as with
-``<<ns/object>>`` to distinguish them from a regular class or shadow
+``<<NSObject>>`` to distinguish them from a regular class or shadow
 class.
 
 

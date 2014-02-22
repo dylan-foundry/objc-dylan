@@ -68,7 +68,7 @@ define module objective-c
          \objc-protocol-definer,
          \send;
 
-  export <ns/object>,
-         <<ns/object>>,
+  export <NSObject>,
+         <<NSObject>>,
          $nil;
 end module;

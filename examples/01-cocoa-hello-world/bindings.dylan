@@ -15,33 +15,33 @@ define objc-selector @init
   selector: "init";
 end;
 
-define objc-shadow-class <ns/notification> (<ns/object>) => NSNotification;
+define objc-shadow-class <NSNotification> (<NSObject>) => NSNotification;
 
 define objc-selector @applicationDidFinishLaunching/
   parameter target :: <objc/instance>;
-  parameter notification :: <ns/notification>;
+  parameter notification :: <NSNotification>;
   selector: "applicationDidFinishLaunching:";
 end;
 
 ignore(%send-@applicationDidFinishLaunching/);
 
-define objc-shadow-class <ns/responder> (<ns/object>) => NSResponder;
-define objc-shadow-class <ns/application> (<ns/responder>) => NSApplication;
+define objc-shadow-class <NSResponder> (<NSObject>) => NSResponder;
+define objc-shadow-class <NSApplication> (<NSResponder>) => NSApplication;
 
 define objc-selector @shared-application
   parameter target :: <objc/class>;
-  result application :: <ns/application>;
+  result application :: <NSApplication>;
   selector: "sharedApplication";
 end;
 
 define objc-selector @set-delegate/
-  parameter target :: <ns/application>;
-  parameter delegate :: <ns/object>;
+  parameter target :: <NSApplication>;
+  parameter delegate :: <NSObject>;
   selector: "setDelegate:";
 end;
 
 define objc-selector @run
-  parameter target :: <ns/application>;
+  parameter target :: <NSApplication>;
   selector: "run";
 end;
 

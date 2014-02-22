@@ -41,7 +41,7 @@ define function objc/shadow-class-for
     format-out("WARNING: objc/shadow-class-for: No shadow class for %s\n", objc/class-name(raw-objc-class));
     force-out();
   end;
-  shadow-class | <ns/object>;
+  shadow-class | <NSObject>;
 end;
 
 define function objc/class-for-shadow
