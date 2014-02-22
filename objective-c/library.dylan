@@ -16,6 +16,7 @@ define module objective-c
   use dylan-direct-c-ffi, export: all;
   use common-dylan, exclude: { format-to-string };
   use format;
+  use format-out;
   use print, import: { print-object };
   use streams;
 

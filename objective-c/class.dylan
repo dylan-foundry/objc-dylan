@@ -35,7 +35,13 @@ end;
 define function objc/shadow-class-for
     (raw-objc-class :: <machine-word>)
  => (shadow-class :: subclass(<objc/instance>))
-  $shadow-class-registry[raw-objc-class]
+  let shadow-class = element($shadow-class-registry, raw-objc-class, default: #f);
+  unless (shadow-class)
+    // XXX: Would prefer that this be format-err / force-err but they don't exist.
+    format-out("WARNING: objc/shadow-class-for: No shadow class for %s\n", objc/class-name(raw-objc-class));
+    force-out();
+  end;
+  shadow-class | <ns/object>;
 end;
 
 define function objc/class-for-shadow
@@ -60,13 +66,23 @@ define function objc/get-class (name :: <string>)
   end if
 end;
 
-define function objc/class-name (objc-class :: <objc/class>)
+define method objc/class-name (objc-class :: <objc/class>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
             (objc-class :: <raw-machine-word>)
          => (name :: <raw-byte-string>)
           (objc-class.as-raw-class)
+       end)
+end;
+
+define method objc/class-name (raw-objc-class :: <machine-word>)
+ => (objc-class-name :: <string>)
+  primitive-raw-as-string
+      (%call-c-function ("class_getName")
+            (objc-class :: <raw-machine-word>)
+         => (name :: <raw-byte-string>)
+          (primitive-unwrap-machine-word(raw-objc-class))
        end)
 end;
 
