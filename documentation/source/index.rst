@@ -22,7 +22,8 @@ Objective C selectors (method definitions can be described using the
 Objective C classes and instances using the :macro:`send`
 macro.
 
-A quick example usage is:
+This demonstrates the definition of 3 standard selectors and how to
+invoke them:
 
 .. code-block:: dylan
 
@@ -32,6 +33,12 @@ A quick example usage is:
      selector: "alloc";
    end;
 
+   define objc-selector @init
+     parameter target :: <objc/instance>;
+     result objc-instance :: <objc/instance>;
+     selector: "init";
+   end;
+
    define objc-selector @retain-count
      parameter target :: <objc/instance>;
      result retain-count :: <C-int>;
@@ -39,12 +46,32 @@ A quick example usage is:
    end;
 
    begin
-     let inst = send($NSObject, @alloc);
+     let inst = send(send($NSObject, @alloc), @init);
      let count = send(inst, @retain-count);
    end;
 
-This demonstrates the definition of 2 standard selectors and how to
-invoke them.
+New subclasses of Objective C classes can be created from Dylan and methods
+added to them:
+
+.. code-block:: dylan
+
+   define function finished-launching
+       (self, cmd, notification :: <NSNotification>)
+    => ()
+     format-out("Application has launched.\n");
+   end;
+
+   define C-callable-wrapper finished-launching-c-wrapper of finished-launching
+     parameter self :: <MyDelegate>;
+     parameter cmd :: <objc/selector>;
+     parameter notification :: <NSNotification>;
+   end;
+
+   define objc-class <MyDelegate> (<NSObject>) => MyDelegate
+     bind @applicationDidFinishLaunching/ => finished-launching-c-wrapper ("v@:@");
+   end;
+
+We recognize that this is still verbose and hope to improve upon this.
 
 Design
 ======
