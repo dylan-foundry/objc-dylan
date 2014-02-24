@@ -40,16 +40,16 @@ define function objc/shadow-class-for
     = if (shadow-class)
         #t
       else
-        format-out("WARNING:  objc/shadow-class-for:  No shadow class for %s.\n", objc/class-name(raw-objc-class));
-        force-out();
+        format-err("WARNING:  objc/shadow-class-for:  No shadow class for %s.\n", objc/class-name(raw-objc-class));
+        force-err();
         raw-objc-class := objc/raw-super-class(raw-objc-class);
         #f
       end;
   until (found | ~raw-objc-class)
     shadow-class := element($shadow-class-registry, raw-objc-class, default: #f);
     if (shadow-class)
-      format-out("WARNING:  objc/shadow-class-for:  Using %s instead.\n", objc/class-name(raw-objc-class));
-      force-out();
+      format-err("WARNING:  objc/shadow-class-for:  Using %s instead.\n", objc/class-name(raw-objc-class));
+      force-err();
       found := #t;
     else
       raw-objc-class := objc/raw-super-class(raw-objc-class);
