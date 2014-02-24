@@ -29,18 +29,7 @@ end;
 
 define macro objc-class-definer
   { define objc-class ?:name (?super:name) => ?objc-name:name
-      ?methods:*
-    end }
-    => {
-         define objc-class-aux ?name (?super) => ?objc-name
-          (?methods) (?methods)
-         end
-  }
-end;
-
-define macro objc-class-aux-definer
-  { define objc-class-aux ?:name (?super:name) => ?objc-name:name
-      (?c-callable-wrappers) (?add-methods)
+      ?add-methods:*
     end }
     => {
          begin
@@ -51,10 +40,6 @@ define macro objc-class-aux-definer
          let objc-class = "$" ## ?objc-name;
          ?add-methods
   }
-
-  c-callable-wrappers:
-    { } => { }
-    { ?other:* } => { }
 
   add-methods:
     { } => { }
