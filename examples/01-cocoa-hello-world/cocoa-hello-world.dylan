@@ -12,13 +12,13 @@ end;
 
 // This lets finished-launching be invoked from C and handles type mappings.
 define C-callable-wrapper finished-launching-c-wrapper of finished-launching
-  parameter self :: <NSObject>;
+  parameter self :: <MyDelegate>;
   parameter cmd :: <objc/selector>;
-  parameter notification :: <NSObject>;
+  parameter notification :: <NSNotification>;
 end;
 
 // Create our delegate class and add a method for our callback
-define objc-class <my-delegate> (<NSObject>) => MyDelegate
+define objc-class <MyDelegate> (<NSObject>) => MyDelegate
   bind @applicationDidFinishLaunching/ => finished-launching-c-wrapper ("v@:@");
 end;
 
