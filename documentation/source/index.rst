@@ -50,8 +50,6 @@ invoke them:
      let count = send(inst, @retain-count);
    end;
 
-See :macro:`objc-selector-definer` and :macro:`send` for more detals.
-
 New subclasses of Objective C classes can be created from Dylan and methods
 added to them:
 
