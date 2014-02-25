@@ -46,10 +46,47 @@ define macro objc-class-definer
     { ?add-method:*; ... } => { ?add-method; ... }
 
   add-method:
-    { bind ?selector:name => ?dylan-method-wrapper:name (?encoding:expression) }
+    { bind ?selector:name => ?dylan-method:name (?encoding:expression) }
       => {
-      objc/add-method(objc-class, ?selector, ?dylan-method-wrapper, ?encoding)
+      objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding)
     }
+end;
+
+define macro objc-method-definer
+  { define objc-method ?:name (?args:*) => (?result:variable)
+      c-signature: (?cffi-parameters:*) => (?cffi-result:variable);
+      ?:body
+    end }
+    => {
+         define function ?name (?args) => (?result)
+           ?body
+         end;
+         define c-callable-wrapper ?name ## "-c-wrapper" of ?name
+           ?cffi-parameters ;
+           result ?cffi-result
+         end;
+  }
+
+  { define objc-method ?:name (?args:*) => ()
+      c-signature: (?cffi-parameters:*) => ();
+      ?:body
+    end }
+    => {
+         define function ?name (?args) => ()
+           ?body
+         end;
+         define c-callable-wrapper ?name ## "-c-wrapper" of ?name
+           ?cffi-parameters
+         end;
+  }
+
+  args:
+    { } => { }
+    { ?arg:variable, ... } => { ?arg, ... }
+
+  cffi-parameters:
+    { } => { }
+    { ?cffi-parameter:variable, ... } => { parameter ?cffi-parameter; ... }
 end;
 
 define macro send

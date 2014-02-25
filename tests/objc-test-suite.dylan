@@ -136,22 +136,18 @@ define objc-selector @adder
   selector: "adder:";
 end;
 
-define function adder
+define objc-method adder
     (target, selector, a :: <integer>)
  => (r :: <integer>)
+  c-signature: (target :: <objc/instance>,
+                selector :: <objc/selector>,
+                a :: <C-int>) => (r :: <C-int>);
   assert-true(instance?(target, <test-class>));
   a + 1
 end;
 
-define c-callable-wrapper adder-c-wrapper of adder
-  parameter target :: <objc/instance>;
-  parameter selector :: <objc/selector>;
-  parameter a :: <C-int>;
-  result r :: <C-int>
-end;
-
 define objc-class <test-class> (<NSObject>) => DylanTestClass
-  bind @adder => adder-c-wrapper ("i@:i");
+  bind @adder => adder ("i@:i");
 end;
 
 define test objc-create-subclass-test ()

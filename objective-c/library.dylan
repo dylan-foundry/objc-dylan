@@ -65,6 +65,7 @@ define module objective-c
 
   export \objc-shadow-class-definer,
          \objc-class-definer,
+         \objc-method-definer,
          \objc-protocol-definer,
          \send;
 

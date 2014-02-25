@@ -4,22 +4,16 @@ Author: Bruce Mitchener, Jr.
 Copyright: See LICENSE file in this distribution.
 
 // This is our callback for when the application has launched.
-define function finished-launching (self, cmd, notification)
+define objc-method finished-launching (self, cmd, notification) => ()
+  c-signature: (self :: <MyDelegate>, cmd :: <objc/selector>, notification :: <NSNotification>) => ();
   format-out("Hello, world!\n");
   force-out();
   exit-application(0);
 end;
 
-// This lets finished-launching be invoked from C and handles type mappings.
-define C-callable-wrapper finished-launching-c-wrapper of finished-launching
-  parameter self :: <MyDelegate>;
-  parameter cmd :: <objc/selector>;
-  parameter notification :: <NSNotification>;
-end;
-
 // Create our delegate class and add a method for our callback
 define objc-class <MyDelegate> (<NSObject>) => MyDelegate
-  bind @applicationDidFinishLaunching/ => finished-launching-c-wrapper ("v@:@");
+  bind @applicationDidFinishLaunching/ => finished-launching ("v@:@");
 end;
 
 define function main (name :: <string>, arguments :: <vector>)
