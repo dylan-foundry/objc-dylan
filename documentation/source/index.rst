@@ -50,28 +50,28 @@ invoke them:
      let count = send(inst, @retain-count);
    end;
 
+See :macro:`objc-selector-definer` and :macro:`send` for more detals.
+
 New subclasses of Objective C classes can be created from Dylan and methods
 added to them:
 
 .. code-block:: dylan
 
-   define function finished-launching
+   define objc-method finished-launching
        (self, cmd, notification :: <NSNotification>)
     => ()
+     c-signature: (self :: <MyDelegate>, cmd :: <objc/selector>,
+                   notification :: <NSNotification>) => ()
      format-out("Application has launched.\n");
    end;
 
-   define C-callable-wrapper finished-launching-c-wrapper of finished-launching
-     parameter self :: <MyDelegate>;
-     parameter cmd :: <objc/selector>;
-     parameter notification :: <NSNotification>;
-   end;
-
    define objc-class <MyDelegate> (<NSObject>) => MyDelegate
-     bind @applicationDidFinishLaunching/ => finished-launching-c-wrapper ("v@:@");
+     bind @applicationDidFinishLaunching/ => finished-launching ("v@:@");
    end;
 
-We recognize that this is still verbose and hope to improve upon this.
+See :macro:`objc-class-definer` and :macro:`objc-method-definer` for
+more details.
+
 
 Design
 ======
@@ -214,7 +214,7 @@ Macros
      .. code-block:: dylan
 
         define objc-class *class-name* (*superclass*) => *objective-c-name*
-          bind *selector* to *c-callable-wrapper* (*type-encoding*);
+          bind *selector* to *objc-method* (*type-encoding*);
           ...
         end;
 
@@ -222,7 +222,7 @@ Macros
    :parameter superclass: the names of the Dylan shadow superclass.
    :parameter objective-c-name: the name of the Objective C class being created.
    :parameter selector: The selector to be bound to a method implementation.
-   :parameter c-callable-wrapper: The c-callable-wrapper around a Dylan function to be used as a method implementation.
+   :parameter objc-method: The method defined via :macro:`objc-method-definer`.
    :parameter type-encoding: The type encoding string.
 
    :description:
@@ -235,11 +235,7 @@ Macros
 
      .. code-block:: dylan
 
-        bind *selector* to *c-callable-wrapper* (*type-encoding*);
-
-     At this time, both the selector and the c-callable wrapper must already
-     have been defined separately. We recognize that this is verbose and
-     are looking at alternatives.
+        bind *selector* to *objc-method* (*type-encoding*);
 
      The type encoding is a string with the result type first and then
      each of the argument types. The types correspond to the Dylan C-FFI
@@ -296,23 +292,59 @@ Macros
           selector: "adder:";
         end;
 
-        define function adder
-            (target, selector, a :: <integer>)
+        define objc-method adder
+            (self, selector, a :: <integer>)
          => (r :: <integer>)
-          assert-true(instance?(target, <test-class>));
+          c-signature: (self :: <objc/instance>, selector :: <objc/selector>,
+                        a :: <C-int>) => (r :: <C-int>);
+          assert-true(instance?(self, <test-class>));
           a + 1
         end;
 
-        define c-callable-wrapper adder-c-wrapper of adder
-          parameter target :: <objc/instance>;
-          parameter selector :: <objc/selector>;
-          parameter a :: <C-int>;
-          result r :: <C-int>
+        define objc-class <test-class> (<ns/object>) => DylanTestClass
+          bind @adder => adder ("i@:i");
         end;
 
-        define objc-class <test-class> (<ns/object>) => DylanTestClass
-          bind @adder => adder-c-wrapper ("i@:i");
+
+.. macro:: objc-method-definer
+
+   Defines a function in Dylan and the associated information
+   needed to invoke it from Objective C.
+
+   :macrocall:
+     .. code-block:: dylan
+
+        define objc-method *name* (*args*) => (*result*)
+          c-signature: (*cffi-args*) => (*cffi-result*);
+          *body*
         end;
+
+   :parameter name: The name of the method.
+   :parameter args: A typical parameter list for a method.
+   :parameter result: A typical result definition. If no result, then just ``()``.
+   :parameter cffi-args: A typical parameter list for a method, but all parameters must have a C-FFI type associated with them.
+   :parameter cffi-result: A typical result defintion, but the type must be one of the C-FFI types. If no result, then just ``()``.
+   :parameter body: The body of the method.
+
+   :discussion:
+
+   Defines a function in Dylan and the associated information
+   needed to invoke it from Objective C. This is used in combination
+   with :macro:`objc-class-definer` to add methods to an Objective C
+   class.
+
+   :example:
+
+     .. code-block:: dylan
+
+        define objc-method finished-launching
+            (self, cmd, notification :: <NSNotification>)
+         => ()
+          c-signature: (self :: <MyDelegate>, cmd :: <objc/selector>,
+                        notification :: <NSNotification>) => ()
+          format-out("Application has launched.\n");
+        end;
+
 
 .. macro:: objc-protocol-definer
 
