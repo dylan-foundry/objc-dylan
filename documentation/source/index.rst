@@ -64,7 +64,7 @@ added to them:
    end;
 
    define objc-class <MyDelegate> (<NSObject>) => MyDelegate
-     bind @applicationDidFinishLaunching/ => finished-launching ("v@:@");
+     bind @applicationDidFinishLaunching/ => finished-launching;
    end;
 
 See :macro:`objc-class-definer` and :macro:`objc-method-definer` for
@@ -255,7 +255,7 @@ Macros
      .. code-block:: dylan
 
         define objc-class *class-name* (*superclass*) => *objective-c-name*
-          bind *selector* to *objc-method* (*type-encoding*);
+          bind *selector* to *objc-method*;
           ...
         end;
 
@@ -264,7 +264,6 @@ Macros
    :parameter objective-c-name: the name of the Objective C class being created.
    :parameter selector: The selector to be bound to a method implementation.
    :parameter objc-method: The method defined via :macro:`objc-method-definer`.
-   :parameter type-encoding: The type encoding string.
 
    :description:
 
@@ -277,11 +276,6 @@ Macros
      .. code-block:: dylan
 
         bind *selector* to *objc-method* (*type-encoding*);
-
-     The type encoding is a string with the result type first and then
-     each of the argument types. See `Type Encoding`_ for more details.
-
-     Note that the second and third characters should almost always be ``@:``.
 
    :example:
 
@@ -304,7 +298,7 @@ Macros
         end;
 
         define objc-class <test-class> (<ns/object>) => DylanTestClass
-          bind @adder => adder ("i@:i");
+          bind @adder => adder;
         end;
 
 

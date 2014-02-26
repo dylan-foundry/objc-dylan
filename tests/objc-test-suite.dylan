@@ -151,7 +151,7 @@ define objc-method adder
 end;
 
 define objc-class <test-class> (<NSObject>) => DylanTestClass
-  bind @adder => adder ("i@:i");
+  bind @adder => adder;
 end;
 
 define test objc-create-subclass-test ()

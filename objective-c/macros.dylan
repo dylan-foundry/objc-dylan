@@ -46,9 +46,11 @@ define macro objc-class-definer
     { ?add-method:*; ... } => { ?add-method; ... }
 
   add-method:
-    { bind ?selector:name => ?dylan-method:name (?encoding:expression) }
+    { bind ?selector:name => ?dylan-method:name }
       => {
-      objc/add-method(objc-class, ?selector, ?dylan-method ## "-c-wrapper", ?encoding)
+      objc/add-method(objc-class, ?selector,
+                      ?dylan-method ## "-c-wrapper",
+                      selector-type-encoding(?selector))
     }
 end;
 
