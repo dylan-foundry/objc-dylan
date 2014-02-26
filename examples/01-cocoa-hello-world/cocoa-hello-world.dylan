@@ -7,7 +7,6 @@ Copyright: See LICENSE file in this distribution.
 define objc-method finished-launching (self, cmd, notification) => ()
   c-signature: (self :: <MyDelegate>, cmd :: <objc/selector>, notification :: <NSNotification>) => ();
   format-out("Hello, world!\n");
-  force-out();
   exit-application(0);
 end;
 
