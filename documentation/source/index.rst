@@ -255,7 +255,7 @@ Macros
      .. code-block:: dylan
 
         define objc-class *class-name* (*superclass*) => *objective-c-name*
-          bind *selector* to *objc-method*;
+          bind *selector* => *objc-method*;
           ...
         end;
 
