@@ -13,7 +13,7 @@ end;
 
 // Create our delegate class and add a method for our callback
 define objc-class <MyDelegate> (<NSObject>) => MyDelegate
-  bind @applicationDidFinishLaunching/ => finished-launching ("v@:@");
+  bind @applicationDidFinishLaunching/ => finished-launching;
 end;
 
 define function main (name :: <string>, arguments :: <vector>)
