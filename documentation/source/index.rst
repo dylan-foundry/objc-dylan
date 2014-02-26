@@ -168,6 +168,49 @@ Protocols are commonly named with double ``<<`` and ``>>`` as with
 class.
 
 
+Type Encoding
+=============
+
+The types correspond to the Dylan C-FFI types as follows:
+
++----------------------+-----+
+| Type                 | Enc |
++----------------------+-----+
+| <objc/instance>      | '@' |
++----------------------+-----+
+| <objc/class>         | '#' |
++----------------------+-----+
+| <objc/selector>      | ':' |
++----------------------+-----+
+| <C-character>        | 'c' |
++----------------------+-----+
+| <C-unsigned-char>    | 'C' |
++----------------------+-----+
+| <C-short>            | 's' |
++----------------------+-----+
+| <C-unsigned-short>   | 'S' |
++----------------------+-----+
+| <C-int>              | 'i' |
++----------------------+-----+
+| <C-unsigned-int>     | 'I' |
++----------------------+-----+
+| <C-long>             | 'l' |
++----------------------+-----+
+| <C-unsigned-long>    | 'L' |
++----------------------+-----+
+| <C-float>            | 'f' |
++----------------------+-----+
+| <C-double>           | 'd' |
++----------------------+-----+
+| <C-boolean>          | 'B' |
++----------------------+-----+
+| <C-void>             | 'v' |
++----------------------+-----+
+| poiniter to          | '^' |
++----------------------+-----+
+| <C-string>           | '*' |
++----------------------+-----+
+
 The OBJECTIVE-C module
 ======================
 
@@ -236,48 +279,9 @@ Macros
         bind *selector* to *objc-method* (*type-encoding*);
 
      The type encoding is a string with the result type first and then
-     each of the argument types. The types correspond to the Dylan C-FFI
-     types as follows:
+     each of the argument types. See `Type Encoding`_ for more details.
 
-     +----------------------+-----+
-     | Type                 | Enc |
-     +----------------------+-----+
-     | <objc/instance>      | '@' |
-     +----------------------+-----+
-     | <objc/class>         | '#' |
-     +----------------------+-----+
-     | <objc/selector>      | ':' |
-     +----------------------+-----+
-     | <C-character>        | 'c' |
-     +----------------------+-----+
-     | <C-unsigned-char>    | 'C' |
-     +----------------------+-----+
-     | <C-short>            | 's' |
-     +----------------------+-----+
-     | <C-unsigned-short>   | 'S' |
-     +----------------------+-----+
-     | <C-int>              | 'i' |
-     +----------------------+-----+
-     | <C-unsigned-int>     | 'I' |
-     +----------------------+-----+
-     | <C-long>             | 'l' |
-     +----------------------+-----+
-     | <C-unsigned-long>    | 'L' |
-     +----------------------+-----+
-     | <C-float>            | 'f' |
-     +----------------------+-----+
-     | <C-double>           | 'd' |
-     +----------------------+-----+
-     | <C-boolean>          | 'B' |
-     +----------------------+-----+
-     | <C-void>             | 'v' |
-     +----------------------+-----+
-     | poiniter to          | '^' |
-     +----------------------+-----+
-     | <C-string>           | '*' |
-     +----------------------+-----+
-
-     Note that the second and third characters should always be ``@:``.
+     Note that the second and third characters should almost always be ``@:``.
 
    :example:
 
@@ -495,7 +499,7 @@ Macros
 
      .. code-block:: dylan
 
-       define constant @alloc = objc/register-selector("alloc");
+       define constant @alloc = objc/register-selector("alloc", "@#:");
        define function %send-@alloc (target)
          let c-target = %as-c-representation(<objc/class>,
                                              target);
@@ -711,15 +715,18 @@ Selectors
 
    Returns an :class:`<objc/selector>` for the given selector name.
 
-   :signature: objc/register-selector (name) => (objc-selector)
+   :signature: objc/register-selector (name, type-encoding) => (objc-selector)
 
    :parameter name: An instance of :drm:`<string>`.
+   :parameter type-encoding: An instance of :drm:`<string>`.
    :value objc-selector: An instance of :class:`<objc/selector>`.
 
    :description:
 
      This will not usually be called in user code. Instead, the selector
      is usually defined using :macro:`objc-selector-definer`.
+
+     See `Type Encoding`_ for more details on the *type-encoding* parameter.
 
 .. function:: objc/selector-name
 

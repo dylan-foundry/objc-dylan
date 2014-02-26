@@ -21,9 +21,18 @@ define function objc/method-name (objc-method :: <objc/method>)
   let raw-objc-selector
     = primitive-wrap-machine-word
         (%call-c-function ("method_getName")
-              (name :: <raw-machine-word>)
-           => (object :: <raw-machine-word>)
+              (raw-method :: <raw-machine-word>)
+           => (name :: <raw-machine-word>)
             (objc-method.as-raw-method)
          end);
-  make(<objc/selector>, address: raw-objc-selector)
+  let type-encoding
+    = primitive-raw-as-string
+        (%call-c-function ("method_getTypeEncoding")
+              (raw-method :: <raw-machine-word>)
+           => (encoding :: <raw-machine-word>)
+            (objc-method.as-raw-method)
+         end);
+  make(<objc/selector>,
+       address: raw-objc-selector,
+       encoding: type-encoding)
 end;

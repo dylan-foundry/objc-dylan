@@ -18,14 +18,15 @@ end test objc-class-instance-size-test;
 
 define test objc-selector-test ()
   check-equal("Can register selector",
-              objc/selector-name(objc/register-selector("alloc")),
+              objc/selector-name(objc/register-selector("alloc", "@#:")),
               "alloc");
 end test objc-selector-test;
 
 define test objc-selector-equal-test ()
-  let sel1 = objc/register-selector("hello");
-  let sel2 = objc/register-selector("world");
-  let sel3 = objc/register-selector("hello");
+  // We don't care about the type encoding here.
+  let sel1 = objc/register-selector("hello", "");
+  let sel2 = objc/register-selector("world", "");
+  let sel3 = objc/register-selector("hello", "");
   check-true("Same selectors are equal", sel1 = sel1);
   check-true("Same, but created separately, selectors are equal", sel1 = sel3);
   check-false("Different selectors are not equal", sel1 = sel2);
@@ -34,29 +35,29 @@ end test objc-selector-equal-test;
 define test objc-responds-to-test ()
   let ns-object = objc/get-class("NSObject");
   check-true("NSObject responds to description",
-             objc/class-responds-to-selector?(ns-object, objc/register-selector("description")));
+             objc/class-responds-to-selector?(ns-object, objc/register-selector("description", "@@:")));
   check-false("NSObject doesn't responds to allocFoobar",
-              objc/class-responds-to-selector?(ns-object, objc/register-selector("allocFoobar")));
+              objc/class-responds-to-selector?(ns-object, objc/register-selector("allocFoobar", "@#:")));
 end test objc-responds-to-test;
 
 define test objc-get-class-method-test ()
   let ns-object = objc/get-class("NSObject");
-  let description-SEL = objc/register-selector("description");
+  let description-SEL = objc/register-selector("description", "@@:");
   let description-method = objc/get-class-method(ns-object, description-SEL);
   check-equal("NSObject has a class method 'description'",
               objc/method-name(description-method), description-SEL);
-  let bad-method-SEL = objc/register-selector("allocFoobar");
+  let bad-method-SEL = objc/register-selector("allocFoobar", "@#:");
   check-false("NSObject doesn't have a class method 'allocFoobar'",
               objc/get-class-method(ns-object, bad-method-SEL));
 end test objc-get-class-method-test;
 
 define test objc-get-instance-method-test ()
   let ns-object = objc/get-class("NSObject");
-  let description-SEL = objc/register-selector("description");
+  let description-SEL = objc/register-selector("description", "@@:");
   let description-method = objc/get-instance-method(ns-object, description-SEL);
   check-equal("NSObject has an instance method 'description'",
               objc/method-name(description-method), description-SEL);
-  let bad-method-SEL = objc/register-selector("allocFoobar");
+  let bad-method-SEL = objc/register-selector("allocFoobar", "@#:");
   check-false("NSObject doesn't have an instance method 'allocFoobar'",
               objc/get-instance-method(ns-object, bad-method-SEL));
 end test objc-get-instance-method-test;
@@ -65,12 +66,14 @@ define objc-selector @alloc
   parameter target :: <objc/class>;
   result objc-instance :: <objc/instance>;
   selector: "alloc";
+  type-encoding: "@#:";
 end;
 
 define objc-selector @retain-count
   parameter target :: <objc/instance>;
   result retain-count :: <C-int>;
   selector: "retainCount";
+  type-encoding: "i@:";
 end;
 
 define test objc-alloc-test ()
@@ -134,6 +137,7 @@ define objc-selector @adder
   parameter a :: <C-int>;
   result r :: <C-int>;
   selector: "adder:";
+  type-encoding: "i@:i";
 end;
 
 define objc-method adder
