@@ -35,7 +35,7 @@ define objc-selector @shared-application
   parameter target :: <objc/class>;
   result application :: <NSApplication>;
   selector: "sharedApplication";
-  type-encoding: "@@:";
+  type-encoding: "@#:";
 end;
 
 define objc-selector @set-delegate/
