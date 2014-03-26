@@ -1,0 +1,11 @@
+{
+  "name": "objc-dylan",
+  "description": "An Objective C / Dylan bridge.",
+  "keywords": [
+    "Mac OS X",
+    "Objective C"
+  ],
+  "tests": [
+    "objc-test-suite-app"
+  ]
+}
