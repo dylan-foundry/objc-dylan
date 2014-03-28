@@ -5,6 +5,7 @@
     "Mac OS X",
     "Objective C"
   ],
+  "default-target": "objective-c",
   "tests": [
     "objc-test-suite-app"
   ]
