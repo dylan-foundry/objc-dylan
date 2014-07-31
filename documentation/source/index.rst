@@ -145,7 +145,7 @@ Unsupported
 -----------
 
 Functions available in earlier versions of the Objective C run-time
-that has been deprecated or removed are not supported.
+that have been deprecated or removed are not supported.
 
 The GNU Objective C run-time is also not supported.
 
