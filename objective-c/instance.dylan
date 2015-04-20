@@ -56,7 +56,7 @@ define function objc/instance-class-name (objc-instance :: <objc/instance>)
    primitive-raw-as-string
       (%call-c-function ("object_getClassName")
             (objc-instance :: <raw-machine-word>)
-         => (name :: <raw-machine-word>)
+         => (name :: <raw-byte-string>)
           (objc-instance.as-raw-instance)
        end)
 end;

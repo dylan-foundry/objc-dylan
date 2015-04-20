@@ -29,7 +29,7 @@ define function objc/method-name (objc-method :: <objc/method>)
     = primitive-raw-as-string
         (%call-c-function ("method_getTypeEncoding")
               (raw-method :: <raw-machine-word>)
-           => (encoding :: <raw-machine-word>)
+           => (encoding :: <raw-byte-string>)
             (objc-method.as-raw-method)
          end);
   make(<objc/selector>,
