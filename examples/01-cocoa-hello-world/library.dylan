@@ -7,7 +7,7 @@ define library cocoa-hello-world
 end library;
 
 define module cocoa-hello-world
-  use common-dylan, exclude: { format-to-string };
+  use common-dylan;
   use format-out;
   use objective-c;
 end module;
