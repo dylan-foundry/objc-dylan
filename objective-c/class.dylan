@@ -64,7 +64,7 @@ define function objc/class-for-shadow
   $class-registry[shadow-class]
 end;
 
-define function objc/get-class (name :: <string>)
+define inline function objc/get-class (name :: <string>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
     = primitive-wrap-machine-word
@@ -80,7 +80,7 @@ define function objc/get-class (name :: <string>)
   end if
 end;
 
-define function objc/super-class (objc-class :: <objc/class>)
+define inline function objc/super-class (objc-class :: <objc/class>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
     = primitive-wrap-machine-word
@@ -106,7 +106,7 @@ define inline function objc/raw-super-class (objc-class :: <machine-word>)
      end)
 end;
 
-define method objc/class-name (objc-class :: <objc/class>)
+define inline method objc/class-name (objc-class :: <objc/class>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
@@ -116,7 +116,7 @@ define method objc/class-name (objc-class :: <objc/class>)
        end)
 end;
 
-define method objc/class-name (raw-objc-class :: <machine-word>)
+define inline method objc/class-name (raw-objc-class :: <machine-word>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
@@ -126,7 +126,7 @@ define method objc/class-name (raw-objc-class :: <machine-word>)
        end)
 end;
 
-define function objc/class-responds-to-selector?
+define inline function objc/class-responds-to-selector?
     (objc-class :: <objc/class>, selector :: <objc/selector>)
  => (well? :: <boolean>)
   primitive-raw-as-boolean
@@ -139,7 +139,7 @@ define function objc/class-responds-to-selector?
     end);
 end;
 
-define function objc/instance-size (objc-class :: <objc/class>)
+define inline function objc/instance-size (objc-class :: <objc/class>)
  => (objc-instance-size :: <integer>)
   raw-as-integer
       (%call-c-function ("class_getInstanceSize")
@@ -149,7 +149,7 @@ define function objc/instance-size (objc-class :: <objc/class>)
        end)
 end;
 
-define function objc/get-class-method
+define inline function objc/get-class-method
     (objc-class :: <objc/class>, selector :: <objc/selector>)
  => (method? :: false-or(<objc/method>))
   let raw-method
@@ -168,7 +168,7 @@ define function objc/get-class-method
   end if
 end;
 
-define function objc/get-instance-method
+define inline function objc/get-instance-method
     (objc-class :: <objc/class>, selector :: <objc/selector>)
  => (method? :: false-or(<objc/method>))
   let raw-method
@@ -187,7 +187,7 @@ define function objc/get-instance-method
   end if
 end;
 
-define function objc/allocate-class-pair
+define inline function objc/allocate-class-pair
     (super-class :: subclass(<objc/instance>),
      class-name :: <string>)
  => (objc-class :: <objc/class>)
@@ -206,7 +206,7 @@ define function objc/allocate-class-pair
   make(<objc/class>, address: raw-class)
 end;
 
-define function objc/register-class-pair
+define inline function objc/register-class-pair
     (objc-class :: <objc/class>)
  => ()
   %call-c-function ("objc_registerClassPair")
@@ -216,7 +216,7 @@ define function objc/register-class-pair
   end;
 end;
 
-define function objc/add-method
+define inline function objc/add-method
     (objc-class :: <objc/class>,
      selector :: <objc/selector>,
      implementation :: <c-function-pointer>,
@@ -236,7 +236,7 @@ define function objc/add-method
      end)
 end;
 
-define method objc/conforms-to-protocol?
+define inline method objc/conforms-to-protocol?
     (objc-class :: <objc/class>,
      protocol :: <objc/protocol>)
  => (conforms? :: <boolean>)
@@ -250,7 +250,7 @@ define method objc/conforms-to-protocol?
      end)
 end;
 
-define method objc/add-protocol
+define inline method objc/add-protocol
     (objc-class :: <objc/class>,
      protocol :: <objc/protocol>)
  => (added? :: <boolean>)
