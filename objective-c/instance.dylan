@@ -11,10 +11,6 @@ define C-mapped-subtype <objc/instance> (<C-statically-typed-pointer>)
       end;
 end;
 
-define inline function as-raw-instance (objc-instance :: <objc/instance>)
-  primitive-unwrap-c-pointer(objc-instance)
-end;
-
 define sealed method \=
     (instance1 :: <objc/instance>, instance2 :: <objc/instance>)
  => (equal? :: <boolean>)
@@ -33,31 +29,33 @@ define function objc/instance-class (objc-instance :: <objc/instance>)
  => (objc-class :: <objc/class>)
   let raw-objc-class
     = primitive-wrap-machine-word
-        (%call-c-function ("object_getClass")
-              (objc-instance :: <raw-machine-word>)
-           => (objc-class :: <raw-machine-word>)
-            (objc-instance.as-raw-instance)
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("object_getClass")
+                (objc-instance :: <raw-c-pointer>)
+             => (objc-class :: <raw-c-pointer>)
+              (primitive-unwrap-c-pointer(objc-instance))
+           end));
   make(<objc/class>, address: raw-objc-class)
 end;
 
 define inline function objc/raw-instance-class (objc-instance :: <machine-word>)
  => (raw-objc-class :: <machine-word>)
   primitive-wrap-machine-word
-    (%call-c-function ("object_getClass")
-          (objc-instance :: <raw-machine-word>)
-       => (objc-class :: <raw-machine-word>)
-        (primitive-unwrap-machine-word(objc-instance))
-     end)
+    (primitive-cast-pointer-as-raw
+      (%call-c-function ("object_getClass")
+            (objc-instance :: <raw-c-pointer>)
+         => (objc-class :: <raw-c-pointer>)
+          (primitive-unwrap-machine-word(objc-instance))
+       end))
 end;
 
 define function objc/instance-class-name (objc-instance :: <objc/instance>)
  => (objc-class-name :: <string>)
    primitive-raw-as-string
       (%call-c-function ("object_getClassName")
-            (objc-instance :: <raw-machine-word>)
+            (objc-instance :: <raw-c-pointer>)
          => (name :: <raw-byte-string>)
-          (objc-instance.as-raw-instance)
+          (primitive-unwrap-c-pointer(objc-instance))
        end)
 end;
 
@@ -83,13 +81,14 @@ define inline function objc/associated-object-inner
  => (objc-instance :: <objc/instance>)
   let raw-associated-object
     = primitive-wrap-machine-word
-        (%call-c-function ("objc_getAssociatedObject")
-              (objc-instance :: <raw-machine-word>,
-               key :: <raw-machine-word>)
-           => (associated-object :: <raw-machine-word>)
-            (objc-instance.as-raw-instance,
-             primitive-unwrap-machine-word(key))
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("objc_getAssociatedObject")
+                (objc-instance :: <raw-c-pointer>,
+                 key :: <raw-machine-word>)
+             => (associated-object :: <raw-c-pointer>)
+              (primitive-unwrap-c-pointer(objc-instance),
+               primitive-unwrap-machine-word(key))
+           end));
   if (raw-associated-object ~= 0)
     objc/make-instance(raw-associated-object);
   else
@@ -130,13 +129,14 @@ define inline function objc/set-associated-object-inner
      value :: <objc/instance>, association-policy :: <integer>)
  => ()
   %call-c-function ("objc_setAssociatedObject")
-      (objc-instance :: <raw-machine-word>,
-       key :: <raw-machine-word>, value :: <raw-machine-word>,
+      (objc-instance :: <raw-c-pointer>,
+       key :: <raw-machine-word>,
+       value :: <raw-c-pointer>,
        association-policy :: <raw-c-unsigned-int>)
    => (nothing :: <raw-c-void>)
-    (objc-instance.as-raw-instance,
+    (primitive-unwrap-c-pointer(objc-instance),
      primitive-unwrap-machine-word(key),
-     value.as-raw-instance,
+     primitive-unwrap-c-pointer(value),
      integer-as-raw(association-policy))
   end;
 end;
@@ -145,8 +145,8 @@ define function objc/remove-associated-objects
     (objc-instance :: <objc/instance>)
  => ()
   %call-c-function ("objc_removeAssociatedObjects")
-      (objc-instance :: <raw-machine-word>)
+      (objc-instance :: <raw-c-pointer>)
    => (nothing :: <raw-c-void>)
-    (objc-instance.as-raw-instance)
+    (primitive-unwrap-c-pointer(objc-instance))
   end;
 end;

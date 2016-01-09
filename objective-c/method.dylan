@@ -6,10 +6,6 @@ copyright: See LICENSE file in this distribution.
 define C-subtype <objc/method> (<C-statically-typed-pointer>)
 end;
 
-define inline function as-raw-method (objc-method :: <objc/method>)
-  primitive-unwrap-c-pointer(objc-method)
-end;
-
 define sealed method \=
     (method1 :: <objc/method>, method2 :: <objc/method>)
  => (equal? :: <boolean>)
@@ -20,17 +16,18 @@ define function objc/method-name (objc-method :: <objc/method>)
  => (objc-method-selector :: <objc/selector>)
   let raw-objc-selector
     = primitive-wrap-machine-word
-        (%call-c-function ("method_getName")
-              (raw-method :: <raw-machine-word>)
-           => (name :: <raw-machine-word>)
-            (objc-method.as-raw-method)
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("method_getName")
+                (raw-method :: <raw-c-pointer>)
+             => (name :: <raw-c-pointer>)
+              (primitive-unwrap-c-pointer(objc-method))
+           end));
   let type-encoding
     = primitive-raw-as-string
         (%call-c-function ("method_getTypeEncoding")
-              (raw-method :: <raw-machine-word>)
+              (raw-method :: <raw-c-pointer>)
            => (encoding :: <raw-byte-string>)
-            (objc-method.as-raw-method)
+            (primitive-unwrap-c-pointer(objc-method))
          end);
   make(<objc/selector>,
        address: raw-objc-selector,

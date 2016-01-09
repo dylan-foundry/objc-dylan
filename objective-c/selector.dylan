@@ -8,10 +8,6 @@ define C-subtype <objc/selector> (<C-statically-typed-pointer>)
     init-keyword: encoding:;
 end;
 
-define inline function as-raw-selector (objc-selector :: <objc/selector>)
-  primitive-unwrap-c-pointer(objc-selector)
-end;
-
 define sideways method print-object
     (s :: <objc/selector>, stream :: <stream>)
  => ()
@@ -23,11 +19,12 @@ define function objc/register-selector
  => (objc-selector :: <objc/selector>)
   let raw-objc-selector
     = primitive-wrap-machine-word
-        (%call-c-function ("sel_registerName")
-              (name :: <raw-byte-string>)
-           => (object :: <raw-machine-word>)
-            (primitive-string-as-raw(name))
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("sel_registerName")
+                (name :: <raw-byte-string>)
+             => (object :: <raw-c-pointer>)
+                (primitive-string-as-raw(name))
+           end));
   make(<objc/selector>, encoding: encoding, address: raw-objc-selector)
 end;
 
@@ -35,9 +32,9 @@ define function objc/selector-name (objc-selector :: <objc/selector>)
  => (selector-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("sel_getName")
-            (objc-selector :: <raw-machine-word>)
+            (objc-selector :: <raw-c-pointer>)
          => (name :: <raw-byte-string>)
-          (objc-selector.as-raw-selector)
+          (primitive-unwrap-c-pointer(objc-selector))
        end)
 end;
 
@@ -46,9 +43,10 @@ define sealed method \=
  => (equal? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("sel_isEqual")
-        (sel1 :: <raw-machine-word>,
-         sel2 :: <raw-machine-word>)
+        (sel1 :: <raw-c-pointer>,
+         sel2 :: <raw-c-pointer>)
      => (equal? :: <raw-boolean>)
-      (sel1.as-raw-selector, sel2.as-raw-selector)
+      (primitive-unwrap-c-pointer(sel1),
+       primitive-unwrap-c-pointer(sel2))
     end)
 end;

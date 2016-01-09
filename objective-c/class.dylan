@@ -9,10 +9,6 @@ define constant $class-registry :: <table> = make(<table>);
 define C-subtype <objc/class> (<C-statically-typed-pointer>)
 end;
 
-define inline function as-raw-class (objc-class :: <objc/class>)
-  primitive-unwrap-c-pointer(objc-class)
-end;
-
 define sealed method \=
     (class1 :: <objc/class>, class2 :: <objc/class>)
  => (equal? :: <boolean>)
@@ -68,11 +64,12 @@ define function objc/get-class (name :: <string>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
     = primitive-wrap-machine-word
-        (%call-c-function ("objc_getClass")
-              (name :: <raw-byte-string>)
-           => (object :: <raw-machine-word>)
-            (primitive-string-as-raw(name))
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("objc_getClass")
+                (name :: <raw-byte-string>)
+             => (object :: <raw-c-pointer>)
+              (primitive-string-as-raw(name))
+           end));
   if (raw-objc-class ~= 0)
     make(<objc/class>, address: raw-objc-class)
   else
@@ -84,11 +81,12 @@ define inline function objc/super-class (objc-class :: <objc/class>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
     = primitive-wrap-machine-word
-        (%call-c-function ("class_getSuperclass")
-              (objc-class :: <raw-machine-word>)
-           => (objc-class :: <raw-machine-word>)
-            (objc-class.as-raw-class)
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("class_getSuperclass")
+                (objc-class :: <raw-c-pointer>)
+             => (objc-class :: <raw-c-pointer>)
+                (primitive-unwrap-c-pointer(objc-class))
+           end));
   if (raw-objc-class ~= 0)
     make(<objc/class>, address: raw-objc-class)
   else
@@ -96,23 +94,24 @@ define inline function objc/super-class (objc-class :: <objc/class>)
   end if
 end;
 
-define inline function objc/raw-super-class (objc-class :: <machine-word>)
+define inline function objc/raw-super-class (raw-objc-class :: <machine-word>)
  => (raw-objc-class :: <machine-word>)
   primitive-wrap-machine-word
-    (%call-c-function ("class_getSuperclass")
-          (objc-class :: <raw-machine-word>)
-       => (objc-class :: <raw-machine-word>)
-        (primitive-unwrap-machine-word(objc-class))
-     end)
+    (primitive-cast-pointer-as-raw
+      (%call-c-function ("class_getSuperclass")
+            (objc-class :: <raw-c-pointer>)
+         => (objc-class :: <raw-c-pointer>)
+            (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(raw-objc-class)))
+       end))
 end;
 
 define inline method objc/class-name (objc-class :: <objc/class>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
-            (objc-class :: <raw-machine-word>)
+            (objc-class :: <raw-c-pointer>)
          => (name :: <raw-byte-string>)
-          (objc-class.as-raw-class)
+            (primitive-unwrap-c-pointer(objc-class))
        end)
 end;
 
@@ -120,9 +119,9 @@ define inline method objc/class-name (raw-objc-class :: <machine-word>)
  => (objc-class-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("class_getName")
-            (objc-class :: <raw-machine-word>)
+            (objc-class :: <raw-c-pointer>)
          => (name :: <raw-byte-string>)
-          (primitive-unwrap-machine-word(raw-objc-class))
+            (primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(raw-objc-class)))
        end)
 end;
 
@@ -131,11 +130,11 @@ define inline function objc/class-responds-to-selector?
  => (well? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("class_respondsToSelector")
-        (objc-class :: <raw-machine-word>,
-         selector :: <raw-machine-word>)
+        (objc-class :: <raw-c-pointer>,
+         selector :: <raw-c-pointer>)
      => (well? :: <raw-boolean>)
-      (objc-class.as-raw-class,
-       selector.as-raw-selector)
+      (primitive-unwrap-c-pointer(objc-class),
+       primitive-unwrap-c-pointer(selector))
     end);
 end;
 
@@ -143,9 +142,9 @@ define inline function objc/instance-size (objc-class :: <objc/class>)
  => (objc-instance-size :: <integer>)
   raw-as-integer
       (%call-c-function ("class_getInstanceSize")
-            (objc-class :: <raw-machine-word>)
+            (objc-class :: <raw-c-pointer>)
          => (size :: <raw-machine-word>)
-          (objc-class.as-raw-class)
+          (primitive-unwrap-c-pointer(objc-class))
        end)
 end;
 
@@ -154,13 +153,14 @@ define inline function objc/get-class-method
  => (method? :: false-or(<objc/method>))
   let raw-method
     = primitive-wrap-machine-word
-        (%call-c-function ("class_getClassMethod")
-             (objc-class :: <raw-machine-word>,
-              selector :: <raw-machine-word>)
-          => (method? :: <raw-machine-word>)
-           (objc-class.as-raw-class,
-            selector.as-raw-selector)
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("class_getClassMethod")
+               (objc-class :: <raw-c-pointer>,
+                selector :: <raw-c-pointer>)
+            => (method? :: <raw-c-pointer>)
+             (primitive-unwrap-c-pointer(objc-class),
+              primitive-unwrap-c-pointer(selector))
+           end));
   if (raw-method ~= 0)
     make(<objc/method>, address: raw-method)
   else
@@ -173,13 +173,14 @@ define inline function objc/get-instance-method
  => (method? :: false-or(<objc/method>))
   let raw-method
     = primitive-wrap-machine-word
-        (%call-c-function ("class_getInstanceMethod")
-             (objc-class :: <raw-machine-word>,
-              selector :: <raw-machine-word>)
-          => (method? :: <raw-machine-word>)
-           (objc-class.as-raw-class,
-            selector.as-raw-selector)
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("class_getInstanceMethod")
+               (objc-class :: <raw-c-pointer>,
+                selector :: <raw-c-pointer>)
+            => (method? :: <raw-c-pointer>)
+             (primitive-unwrap-c-pointer(objc-class),
+              primitive-unwrap-c-pointer(selector))
+           end));
   if (raw-method ~= 0)
     make(<objc/method>, address: raw-method)
   else
@@ -194,15 +195,16 @@ define inline function objc/allocate-class-pair
   let super-class = objc/class-for-shadow(super-class);
   let raw-class
     = primitive-wrap-machine-word
-        (%call-c-function ("objc_allocateClassPair")
-             (super-class :: <raw-machine-word>,
-              class-name :: <raw-byte-string>,
-              extra-bytes :: <raw-machine-word>)
-          => (objc-class :: <raw-machine-word>)
-           (super-class.as-raw-class,
-            primitive-string-as-raw(class-name),
-            integer-as-raw(0))
-         end);
+        (primitive-cast-pointer-as-raw
+          (%call-c-function ("objc_allocateClassPair")
+               (super-class :: <raw-c-pointer>,
+                class-name :: <raw-byte-string>,
+                extra-bytes :: <raw-machine-word>)
+            => (objc-class :: <raw-c-pointer>)
+             (primitive-unwrap-c-pointer(super-class),
+              primitive-string-as-raw(class-name),
+              integer-as-raw(0))
+           end));
   make(<objc/class>, address: raw-class)
 end;
 
@@ -210,9 +212,9 @@ define inline function objc/register-class-pair
     (objc-class :: <objc/class>)
  => ()
   %call-c-function ("objc_registerClassPair")
-      (objc-class :: <raw-machine-word>)
+      (objc-class :: <raw-c-pointer>)
    => (nothing :: <raw-c-void>)
-    (objc-class.as-raw-class)
+    (primitive-unwrap-c-pointer(objc-class))
   end;
 end;
 
@@ -224,13 +226,13 @@ define inline function objc/add-method
  => (added? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("class_addMethod")
-         (objc-class :: <raw-machine-word>,
-          selector :: <raw-machine-word>,
-          implementation :: <raw-machine-word>,
+         (objc-class :: <raw-c-pointer>,
+          selector :: <raw-c-pointer>,
+          implementation :: <raw-c-pointer>,
           types :: <raw-byte-string>)
       => (added? :: <raw-boolean>)
-       (objc-class.as-raw-class,
-        selector.as-raw-selector,
+       (primitive-unwrap-c-pointer(objc-class),
+        primitive-unwrap-c-pointer(selector),
         primitive-unwrap-c-pointer(implementation),
         primitive-string-as-raw(types))
      end)
@@ -242,11 +244,11 @@ define inline method objc/conforms-to-protocol?
  => (conforms? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("class_conformsToProtocol")
-         (objc-class :: <raw-machine-word>,
-          protocol :: <raw-machine-word>)
+         (objc-class :: <raw-c-pointer>,
+          protocol :: <raw-c-pointer>)
       => (conforms? :: <raw-boolean>)
-       (objc-class.as-raw-class,
-        protocol.as-raw-protocol)
+       (primitive-unwrap-c-pointer(objc-class),
+        primitive-unwrap-c-pointer(protocol))
      end)
 end;
 
@@ -256,10 +258,10 @@ define inline method objc/add-protocol
  => (added? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("class_addProtocol")
-         (objc-class :: <raw-machine-word>,
-          protocol :: <raw-machine-word>)
+         (objc-class :: <raw-c-pointer>,
+          protocol :: <raw-c-pointer>)
       => (added? :: <raw-boolean>)
-       (objc-class.as-raw-class,
-        protocol.as-raw-protocol)
+       (primitive-unwrap-c-pointer(objc-class),
+        primitive-unwrap-c-pointer(protocol))
      end)
 end;
