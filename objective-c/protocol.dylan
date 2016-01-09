@@ -36,21 +36,21 @@ define function objc/protocol-name (objc-protocol :: <objc/protocol>)
  => (protocol-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("protocol_getName")
-            (objc-class :: <raw-machine-word>)
+            (objc-protocol :: <raw-machine-word>)
          => (name :: <raw-byte-string>)
           (objc-protocol.as-raw-protocol)
        end)
 end;
 
 define sealed method \=
-    (sel1 :: <objc/protocol>, sel2 :: <objc/protocol>)
+    (prtcl1 :: <objc/protocol>, prtcl2 :: <objc/protocol>)
  => (equal? :: <boolean>)
   primitive-raw-as-boolean
     (%call-c-function ("protocol_isEqual")
-        (sel1 :: <raw-machine-word>,
-         sel2 :: <raw-machine-word>)
+        (prtcl1 :: <raw-machine-word>,
+         prtcl2 :: <raw-machine-word>)
      => (equal? :: <raw-boolean>)
-      (sel1.as-raw-protocol, sel2.as-raw-protocol)
+      (prtcl1.as-raw-protocol, prtcl2.as-raw-protocol)
     end)
 end;
 

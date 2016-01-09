@@ -35,7 +35,7 @@ define function objc/selector-name (objc-selector :: <objc/selector>)
  => (selector-name :: <string>)
   primitive-raw-as-string
       (%call-c-function ("sel_getName")
-            (objc-class :: <raw-machine-word>)
+            (objc-selector :: <raw-machine-word>)
          => (name :: <raw-byte-string>)
           (objc-selector.as-raw-selector)
        end)
