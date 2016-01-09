@@ -64,7 +64,7 @@ define function objc/class-for-shadow
   $class-registry[shadow-class]
 end;
 
-define inline function objc/get-class (name :: <string>)
+define function objc/get-class (name :: <string>)
  => (objc-class :: false-or(<objc/class>))
   let raw-objc-class
     = primitive-wrap-machine-word
