@@ -45,7 +45,8 @@ define inline function objc/raw-instance-class (objc-instance :: <machine-word>)
       (%call-c-function ("object_getClass")
             (objc-instance :: <raw-c-pointer>)
          => (objc-class :: <raw-c-pointer>)
-          (primitive-unwrap-machine-word(objc-instance))
+          (primitive-cast-raw-as-pointer
+             (primitive-unwrap-machine-word(objc-instance)))
        end))
 end;
 
@@ -67,7 +68,9 @@ define inline method objc/associated-object
     (objc-instance :: <objc/instance>, key :: <string>)
  => (objc-instance :: <objc/instance>)
   objc/associated-object-inner(objc-instance,
-                               primitive-wrap-machine-word(primitive-string-as-raw(key)))
+                               primitive-wrap-machine-word
+                                 (primitive-cast-pointer-as-raw
+                                    (primitive-string-as-raw(key))))
 end;
 
 define method objc/associated-object
@@ -112,7 +115,9 @@ define inline method objc/set-associated-object
      value :: <objc/instance>, association-policy :: <integer>)
  => ()
   objc/set-associated-object-inner(objc-instance,
-                                   primitive-wrap-machine-word(primitive-string-as-raw(key)),
+                                   primitive-wrap-machine-word
+                                     (primitive-cast-pointer-as-raw
+                                        (primitive-string-as-raw(key))),
                                    value, association-policy);
 end;
 
@@ -130,12 +135,12 @@ define inline function objc/set-associated-object-inner
  => ()
   %call-c-function ("objc_setAssociatedObject")
       (objc-instance :: <raw-c-pointer>,
-       key :: <raw-machine-word>,
+       key :: <raw-c-pointer>,
        value :: <raw-c-pointer>,
        association-policy :: <raw-c-unsigned-int>)
    => (nothing :: <raw-c-void>)
     (primitive-unwrap-c-pointer(objc-instance),
-     primitive-unwrap-machine-word(key),
+     primitive-cast-raw-as-pointer(primitive-unwrap-machine-word(key)),
      primitive-unwrap-c-pointer(value),
      integer-as-raw(association-policy))
   end;
