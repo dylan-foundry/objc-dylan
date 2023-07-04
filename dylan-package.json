@@ -1,0 +1,14 @@
+{
+    "name": "objc-dylan",
+    "url": "https://github.com/dylan-foundry/objc-dylan",
+    "description": "An Objective C / Dylan bridge",
+    "version": "0.1.0",
+    "dependencies": [],
+    "dev-dependencies": [
+        "testworks"
+    ],
+    "keywords": [
+        "Mac OS X",
+        "Objective C"
+    ]
+}
