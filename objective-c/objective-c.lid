@@ -10,3 +10,4 @@ files: library
        macros
        base-definitions
 c-libraries: -lobjc
+platforms: x86_64-darwin

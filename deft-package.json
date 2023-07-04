@@ -2,7 +2,7 @@
   "name": "objc-dylan",
   "description": "An Objective C / Dylan bridge.",
   "keywords": [
-    "Mac OS X",
+    "macOS",
     "Objective C"
   ],
   "default-target": "objective-c",
